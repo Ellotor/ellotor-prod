@@ -90,16 +90,14 @@ form {
     gap: 15px;
     width: 50%;
 }
-
 .ride-option {
     display: flex;
     flex-direction: row;
     gap: 5px;
     width: 50%;
 }
-
-.ride-option label {
-    font-weight: bold;
+.ride-option label{
+	font-weight: bold;
     display: flex;
     flex-direction: row;
     gap: 5px;
@@ -108,14 +106,13 @@ form {
 
 .ride-selection input[type="number"] {
     width: 100%;
-    height: 60%;
-    font-size: 20px;
+	height : 60%;
+	font-size: 20px;
 }
-
 .other-amount input[type="text"] {
     width: 100%;
-    height: 100%;
-    font-size: 50px;
+	height : 100%;
+	font-size: 50px;
 }
 
 /* Styling for increment/decrement buttons */
@@ -143,11 +140,11 @@ button.decrement:focus {
 
 /* Security Amount: Styling for the checkboxes */
 .security-amount {
-    margin-top: 25px;
+	margin-top:25px;
     display: flex;
     align-items: center; /* Align items on the same line */
     gap: 15px;
-    font-size: 20px;
+	font-size: 20px;
     justify-content: center; /* Ensure it aligns horizontally */
 }
 
@@ -155,22 +152,23 @@ button.decrement:focus {
     width: 30px;
     height: 30px;
 }
-
 .payment-mode input[type="checkbox"] {
     width: 30px;
     height: 30px;
 }
 
+
+
 /* Security Amount label - bold text */
 .security-amount label {
     font-weight: bold;
-    font-size: 18px;
+	font-size: 18px;
 }
 
 /* Mode to Pay label - bold text */
 .payment-mode label {
     font-weight: bold;
-    font-size: 20px;
+	font-size: 20px;
     display: flex;
 }
 
@@ -178,7 +176,7 @@ button.decrement:focus {
     display: flex;
     gap: 10px;
     margin: 0 auto;
-    font-size: 20px;
+	font-size: 20px;
 }
 
 /* Labels for Name, Mobile Number, and Start Time to be bold */
@@ -190,9 +188,11 @@ button.decrement:focus {
 
 /* Submit button styling */
 .submit-row {
-    display: flex;
+	display: flex;
     flex-direction: row;
+
 }
+
 
 button[type="submit"] {
     padding: 18px;
@@ -210,7 +210,6 @@ button[type="submit"] {
 button[type="back"]:hover {
     background-color: #0056b3;
 }
-
 button[type="back"] {
     padding: 18px;
     background-color: #007bff;
@@ -227,7 +226,6 @@ button[type="back"] {
 button[type="submit"]:hover {
     background-color: #0056b3;
 }
-
 /* "Other" Amount input styling - initially hidden */
 .input-group .other-amount {
     width: 100%;
@@ -276,55 +274,5 @@ input[type="checkbox"][name="other"]:checked + .other-amount {
 
     .ride-selection {
         width: 100%;
-    }
-
-    .submit-row {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    button[type="submit"],
-    button[type="back"] {
-        width: 100%;
-        font-size: 20px;
-        padding: 15px;
-    }
-}
-
-/* For very small screens (max-width: 500px) */
-@media (max-width: 500px) {
-    h1 {
-        font-size: 24px;
-    }
-
-    .input-group input[type="text"],
-    .input-group input[type="number"] {
-        padding: 10px;
-        font-size: 14px;
-    }
-
-    button[type="submit"] {
-        font-size: 16px;
-        padding: 12px;
-    }
-
-    .ride-selection input[type="number"] {
-        font-size: 18px;
-    }
-
-    .other-amount input[type="text"] {
-        font-size: 40px;
-    }
-
-    .security-amount {
-        font-size: 18px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    button[type="submit"],
-    button[type="back"] {
-        width: 100%;
-        font-size: 18px;
     }
 }

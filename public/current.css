@@ -22,7 +22,7 @@ body {
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    font-size: 15px;
+	font-size: 15px;
     max-width: 1200px;
     width: 100%;
     text-align: center;
@@ -51,7 +51,7 @@ table {
 }
 
 table th, table td {
-    font-size: 15px;
+	font-size: 15px;
     padding: 5px 10px;
     text-align: center;
     border: 1px solid #ddd;
@@ -59,7 +59,7 @@ table th, table td {
 
 table th {
     background-color: #007bff;
-    font-size: 20px;
+	font-size: 20px;
     color: white;
     font-weight: bold;
 }
@@ -78,7 +78,7 @@ table tr:hover {
     margin-top: 20px;
 }
 
-#back button {
+#back button{
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -86,7 +86,7 @@ table tr:hover {
     font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    margin: 0 10px;
+    margin: 0 10px;	
 }
 
 #pagination button {
@@ -108,6 +108,7 @@ table tr:hover {
     background-color: #0056b3;
 }
 
+
 #back #pagination #page-number {
     font-size: 18px;
     font-weight: bold;
@@ -122,8 +123,6 @@ table td[colspan="10"] {
 }
 
 /* Responsive adjustments */
-
-/* For tablets and below (max-width: 800px) */
 @media (max-width: 800px) {
     .container {
         padding: 20px;
@@ -141,24 +140,11 @@ table td[colspan="10"] {
     table {
         font-size: 14px;
     }
-
-    #back button,
-    #pagination button {
-        font-size: 14px;
-        padding: 8px 16px;
-    }
-
-    #back button:hover,
-    #pagination button:hover {
-        background-color: #0056b3;
-    }
 }
 
-/* For small screens (max-width: 500px) */
 @media (max-width: 500px) {
     .container {
-        padding: 10px;
-        max-width: 100%;
+        padding: 15px;
     }
 
     h1 {
@@ -171,55 +157,5 @@ table td[colspan="10"] {
 
     table th, table td {
         padding: 8px;
-    }
-
-    /* Adjust button size for mobile */
-    #back button,
-    #pagination button {
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-
-    #back button:hover,
-    #pagination button:hover {
-        background-color: #0056b3;
-    }
-
-    /* Reducing font size of page number on mobile */
-    #back #pagination #page-number {
-        font-size: 14px;
-    }
-
-    /* Adjustments for No Data message */
-    table td[colspan="10"] {
-        font-size: 14px;
-        padding: 15px 10px;
-    }
-}
-
-/* For extra small screens (max-width: 360px) */
-@media (max-width: 360px) {
-    h1 {
-        font-size: 18px;
-        margin-bottom: 15px;
-    }
-
-    table {
-        font-size: 11px;
-    }
-
-    table th, table td {
-        padding: 6px 10px;
-    }
-
-    /* Adjust button size even further */
-    #back button,
-    #pagination button {
-        font-size: 10px;
-        padding: 5px 10px;
-    }
-
-    #back #pagination #page-number {
-        font-size: 12px;
     }
 }

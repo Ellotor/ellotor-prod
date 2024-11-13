@@ -8,6 +8,7 @@
 /* Body Styling */
 body {
     font-family: 'Arial', sans-serif;
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,7 +17,7 @@ body {
 }
 
 /* Main container */
-.container {
+.container{
     background-color: #cfe7ff;
     padding: 30px;
     border-radius: 10px;
@@ -24,24 +25,23 @@ body {
     max-width: 1000px;
     width: 100%;
     text-align: center;
-    margin-top: 50px;
+	margin-top: 50px;
 }
 
-/* Ride section styling */
-#ride-section {
-    text-align: center;
-    background-color: #cfe7ff;
-    max-width: 1200px;
-    max-height: 1200px;
-    margin-top: 40px;
-    margin-bottom: 40px;
+#ride-section{
+ text-align: center;
+ background-color: #cfe7ff;
+ max-width: 1200px;
+ max-height: 1200px;
+    margin-top: 40px;	
+	margin-bottom: 40px;
 }
 
 /* Heading styles */
 h1 {
     color: #007bff;
     font-weight: bold;
-    margin-top: 30px;
+	margin-top: 30px;
     margin-bottom: 30px;
     font-size: 45px;
 }
@@ -56,6 +56,7 @@ h2 {
 /* Stand selection button styling */
 #stand-selection {
     margin-bottom: 20px;
+	
 }
 
 #stand-selection button {
@@ -73,9 +74,11 @@ h2 {
 
 #stand-selection button:hover {
     background-color: #0056b3;
+
 }
 
 /* Action button styling (Initially hidden) */
+/* Styling for the button grid */
 #ride-buttons {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* 2 columns */
@@ -85,6 +88,7 @@ h2 {
 }
 
 /* Action buttons (Start, Current, Fetch-Data) */
+/* Button styling */
 button {
     padding: 15px;
     font-size: 30px;
@@ -102,53 +106,16 @@ button:hover {
 
 /* Small screen adjustments */
 @media (max-width: 600px) {
-    /* Container adjustments */
     .container {
         padding: 20px;
     }
 
-    /* Stand selection button size adjustments */
-    #stand-selection button, 
-    #ride-buttons button, 
-    #back-button {
-        font-size: 20px;  /* Reduced font size for mobile */
-        padding: 12px;    /* Adjust padding for mobile */
-        width: 100%;      /* Full width buttons */
+    #stand-selection button, #ride-buttons button, #back-button {
+        font-size: 45px;
+        padding: 12px;
     }
 
-    /* Heading adjustments for mobile */
     h1 {
-        font-size: 24px;  /* Reduced font size */
-        margin-top: 20px;  /* Adjust margin for mobile */
-        margin-bottom: 20px; /* Adjust margin for mobile */
-    }
-
-    h2 {
-        font-size: 22px;  /* Reduced font size */
-        margin-bottom: 20px;
-    }
-
-    /* Action button grid adjustments */
-    #ride-buttons {
-        grid-template-columns: 1fr; /* Stacking buttons vertically */
-        max-width: 100%;
-        margin: 0;
-    }
-
-    /* Adjust the button grid for small screens */
-    #ride-buttons button {
-        font-size: 22px; /* Slightly smaller font for mobile */
-        padding: 15px;   /* Ensure proper padding */
-    }
-
-    /* Adjust margin for ride section */
-    #ride-section {
-        margin-top: 30px; /* Reduced top margin */
-        margin-bottom: 30px; /* Reduced bottom margin */
-    }
-
-    /* Overall layout adjustments */
-    #ride-buttons, #stand-selection {
-        width: 100%; /* Ensure buttons take up full width */
+        font-size: 24px;
     }
 }
