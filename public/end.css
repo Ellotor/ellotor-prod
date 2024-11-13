@@ -258,6 +258,8 @@ textarea {
 }
 
 /* Responsive design adjustments */
+
+/* For tablets and below (max-width: 800px) */
 @media (max-width: 800px) {
     .container {
         padding: 20px;
@@ -287,6 +289,7 @@ textarea {
     }
 }
 
+/* For small screens (max-width: 500px) */
 @media (max-width: 500px) {
     .container {
         padding: 15px;
