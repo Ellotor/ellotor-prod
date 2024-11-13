@@ -1,0 +1,278 @@
+/* Reset some default browser styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Main container styling */
+.container {
+    background-color: #cfe7ff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    width: 100%;
+    text-align: center;
+    border-top: 5px solid #007bff;
+}
+
+/* Form Heading */
+h1 {
+    color: white;
+    background-color: #000;
+    font-size: 32px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+/* Form container styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Input Group Styling */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-size: 16px;
+    color: black;
+    margin-bottom: 8px;
+}
+
+/* Input fields styling */
+.input-group input[type="text"],
+.input-group input[type="number"] {
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: black;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input[type="text"]:focus,
+.input-group input[type="number"]:focus {
+    border-color: #007bff;
+}
+
+/* Row layout */
+.row {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+/* Ride Selection Styling */
+.ride-selection {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    width: 50%;
+}
+.ride-option {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    width: 50%;
+}
+.ride-option label{
+	font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    width: 50%;
+}
+
+.ride-selection input[type="number"] {
+    width: 100%;
+	height : 60%;
+	font-size: 20px;
+}
+.other-amount input[type="text"] {
+    width: 100%;
+	height : 100%;
+	font-size: 50px;
+}
+
+/* Styling for increment/decrement buttons */
+button.increment,
+button.decrement {
+    background-color: #007bff;
+    color: white;
+    font-size: 30px;
+    width: 70px;
+    height: 35px;
+    border-radius: 100%;
+    border: none;
+    cursor: pointer;
+}
+
+button.increment:hover,
+button.decrement:hover {
+    background-color: #444;
+}
+
+button.increment:focus,
+button.decrement:focus {
+    outline: none;
+}
+
+/* Security Amount: Styling for the checkboxes */
+.security-amount {
+	margin-top:25px;
+    display: flex;
+    align-items: center; /* Align items on the same line */
+    gap: 15px;
+	font-size: 20px;
+    justify-content: center; /* Ensure it aligns horizontally */
+}
+
+.security-amount input[type="checkbox"] {
+    width: 30px;
+    height: 30px;
+}
+.payment-mode input[type="checkbox"] {
+    width: 30px;
+    height: 30px;
+}
+
+
+
+/* Security Amount label - bold text */
+.security-amount label {
+    font-weight: bold;
+	font-size: 18px;
+}
+
+/* Mode to Pay label - bold text */
+.payment-mode label {
+    font-weight: bold;
+	font-size: 20px;
+    display: flex;
+}
+
+.payment-mode {
+    display: flex;
+    gap: 10px;
+    margin: 0 auto;
+	font-size: 20px;
+}
+
+/* Labels for Name, Mobile Number, and Start Time to be bold */
+.input-group.name label,
+.input-group.mobile label,
+.input-group.start-time label {
+    font-weight: bold;
+}
+
+/* Submit button styling */
+.submit-row {
+	display: flex;
+    flex-direction: row;
+
+}
+
+
+button[type="submit"] {
+    padding: 18px;
+    background-color: #007bff;
+    color: white;
+    font-size: 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 50%;
+    margin-right: 20px;
+}
+
+button[type="back"]:hover {
+    background-color: #0056b3;
+}
+button[type="back"] {
+    padding: 18px;
+    background-color: #007bff;
+    color: white;
+    font-size: 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 50%;
+    margin-left: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+/* "Other" Amount input styling - initially hidden */
+.input-group .other-amount {
+    width: 100%;
+    max-width: 240px; /* Approx. width for 15 characters */
+    padding: 14px;
+    display: none; /* Hide by default */
+}
+
+/* Hide "Other" amount by default */
+#other-amount {
+    display: none;
+}
+
+/* Show "Other" Amount input when checkbox is checked */
+input[type="checkbox"][name="other"]:checked + .other-amount {
+    display: block;
+}
+
+/* Adjustments for small screens */
+@media (max-width: 768px) {
+    form {
+        gap: 20px;
+    }
+
+    .row {
+        flex-direction: column;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="number"] {
+        padding: 12px;
+    }
+
+    button[type="submit"] {
+        font-size: 18px;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .security-amount div {
+        flex-basis: 100%;
+    }
+
+    .ride-selection {
+        width: 100%;
+    }
+}

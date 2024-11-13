@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Stand</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Stand Selection Buttons (Initially visible) -->
+        <div id="stand-selection">
+            <h1>Select a Stand</h1>
+            <button onclick="selectStand('Stand-1')">Stand 1</button>
+            <button onclick="selectStand('Stand-2')">Stand 2</button>
+            <button onclick="selectStand('Stand-3')">Stand 3</button>
+            <button onclick="selectStand('Stand-4')">Stand 4</button>
+			<button id="back"  onclick="goBackpage()">Back</button>
+        </div>
+
+        <!-- Dynamic Heading and Ride Buttons (Initially hidden) -->
+        <div id="ride-section" style="display: none;">
+            <h2 id="selected-stand-heading">Selected Stand: </h2> <!-- Dynamic Stand Name Heading -->
+            
+            <!-- Grid Layout for Buttons -->
+            <div id="ride-buttons" class="button-grid">
+                <button onclick="redirectToActionPage('start')">Start</button>
+                <button onclick="redirectToActionPage('current')">Current</button>
+                <button onclick="redirectToActionPage('end')">End</button>
+                <button id="back-button" style="display: none;" onclick="goBack()">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Rides</title>
+    <link rel="stylesheet" href="current.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Current Rides</h1>
+        
+        <div id="data-display">
+            <h2><span id="stand-name"></span></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Token No</th>
+						<th>Stand</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Payment Mode</th>
+                        <th>Security Amount</th>
+                        <th>Single Rides</th>
+                        <th>Double Rides</th>
+                        <th>Ellotor Rides</th>
+						<th>Kids Rides</th>
+						<th>Baby Rides</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    <!-- Data will be inserted here dynamically -->
+                </tbody>
+            </table>
+            
+            <!-- Pagination Controls -->
+            <div id="pagination">
+                <button id="prev-button" onclick="changePage('prev')">Previous</button>
+                <span id="page-number">Page 1</span>
+                <button id="next-button" onclick="changePage('next')">Next</button>
+            </div>
+            <div class="back" id="back">
+                <button id="back-button">Back</button>
+            </div>                
+        </div>
+    </div>
+
+    <script src="current.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+/* Reset some default browser styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Main container */
+.container{
+    background-color: #cfe7ff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+	margin-top: 50px;
+}
+
+#ride-section{
+ text-align: center;
+ background-color: #cfe7ff;
+ max-width: 1200px;
+ max-height: 1200px;
+    margin-top: 40px;	
+	margin-bottom: 40px;
+}
+
+/* Heading styles */
+h1 {
+    color: #007bff;
+    font-weight: bold;
+	margin-top: 30px;
+    margin-bottom: 30px;
+    font-size: 45px;
+}
+
+h2 {
+    color: #007bff;
+    font-weight: bold;
+    margin-bottom: 30px;
+    font-size: 35px;
+}
+
+/* Stand selection button styling */
+#stand-selection {
+    margin-bottom: 20px;
+	
+}
+
+#stand-selection button {
+    width: 80%;
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
+}
+
+#stand-selection button:hover {
+    background-color: #0056b3;
+
+}
+
+/* Action button styling (Initially hidden) */
+/* Styling for the button grid */
+#ride-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    grid-gap: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Action buttons (Start, Current, Fetch-Data) */
+/* Button styling */
+button {
+    padding: 15px;
+    font-size: 30px;
+    cursor: pointer;
+    width: 100%; /* Ensures buttons are responsive */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Small screen adjustments */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    #stand-selection button, #ride-buttons button, #back-button {
+        font-size: 45px;
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+}

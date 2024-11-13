@@ -1,0 +1,330 @@
+/* Reset some default browser styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Main container */
+.container {
+    background-color: #cfe7ff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    width: 100%;
+    text-align: center;
+}
+/* Basic modal styling */
+#confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.modal-content button {
+    margin-top: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+/* Heading styles */
+h1 {
+    color: #007bff;
+    font-weight: bold;
+	justify-content: center;
+	text-align: center;
+	align-items: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #007bff;
+	font-size: 32px;
+	margin-bottom: 20px;
+	margin-Top: 20px;
+	justify-content: center;
+
+}
+
+
+
+/* Form styling */
+#search-form, #billing-form {
+    margin-bottom: 30px;
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#mobile{
+	width: 50%; /* Increase the width of the mobile number input box */
+    padding: 15px;
+    font-size: 20px; /* Increase font size of the input text */
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    text-align: left; /* Center text inside input box */
+}
+
+
+
+.input-group-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for billing form */
+    gap: 20px; /* Adds space between items */
+    margin-bottom: 20px;
+}
+
+.input-group {
+    width: 100%; /* Ensure input groups fill up their grid cell */
+}
+
+/* Reduced font size of labels by 5px */
+.input-group label {
+    font-size: 15px;  /* Original font-size is 20px, reduced by 5px */
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+button {
+    padding: 10px 15px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+#buttons {
+    display: flex;
+    justify-content: space-between; /* Distributes space evenly between the buttons */
+    align-items: center;            /* Vertically center the buttons */
+    gap: 10px;                      /* Optional: Adds a gap between the buttons */
+}
+
+#submit-billing-button,
+#back-button-billing {
+    width: 48%;                      /* Each button will take up 48% of the available space */
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+
+
+button:hover {
+    background-color: #0056b3;
+}
+/* Styling for the comment box */
+textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-height: 100px;  /* Ensure enough space for multiline input */
+    resize: horizontal;  /* Allow users to resize the textarea  */
+}
+
+/* Center the label inside its container */
+#billing-commentss {
+    text-align: center;  /* Centers all text/labels inside this container */
+}
+
+#billing-commentss label {
+    font-size: 15px;
+justify-content: center;	/* Reduced font-size by 5px */
+    align-items: center;
+    font-weight: bold;  /* Make the label text bold */
+}
+
+/* Payment Mode (Online / Offline) */
+#billing-payment-mode {
+    margin-top: 20px;
+    display: flex;
+    font-size: 35px;
+    align-items: center;
+    gap: 15px;  /* Space between checkbox and label */
+}
+
+#billing-payment-mode input[type="checkbox"] {
+    margin: 0;
+    appearance: none; /* Remove default checkbox appearance */
+    width: 30px; /* Set the width */
+    height: 30px; /* Set the height */
+    border: 2px solid #333; /* Border color */
+    border-radius: 5px; /* Optional: Rounded corners */
+    background-color: white; /* Default background color */
+    position: relative; /* For positioning the checkmark */
+    transition: background-color 0.3s; /* Smooth transition for checked state */
+}
+
+/* When checkbox is checked */
+#billing-payment-mode input[type="checkbox"]:checked {
+    margin-top: 5px;
+    background-color: #4caf50; /* Green background when checked */
+    border-color: #4caf50; /* Green border when checked */
+}
+
+/* Create the green checkmark inside the checkbox */
+#billing-payment-mode input[type="checkbox"]:checked::before {
+    content: ''; /* Add content */
+    position: absolute;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    width: 12px; /* Width of the checkmark */
+    height: 6px; /* Height of the checkmark */
+    border-left: 3px solid white; /* Left side of the checkmark */
+    border-bottom: 3px solid white; /* Bottom side of the checkmark */
+    transform: translate(-50%, -50%) rotate(-45deg); /* Position and rotate to create a checkmark shape */
+}
+
+#billing-payment-mode label {
+    margin-top: 25px;
+    margin: 0;
+    font-size: 20px; /* Reduced by 5px from 25px */
+    font-weight: normal;
+}
+
+
+/* Hide unnecessary sections by default */
+#billing-details, #data-display, #no-data-message {
+    display: none;
+}
+
+/* Table styling for fetched data */
+#data-display table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#data-display th, #data-display td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+#data-display th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+#data-display tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#data-display tr:hover {
+    background-color: #e9e9e9;
+}
+
+/* Green '+' icon */
+#final-bill-icon {
+    color: green;
+    font-weight: bold;
+    font-size: 50px;
+    margin-right: 10px;
+}
+
+/* Red '-' icon */
+#amount-returned-icon {
+    color: red;
+    font-weight: bold;
+    font-size: 100px;
+    margin-right: 10px;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 800px) {
+    .container {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .input-group input, button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    table th, table td {
+        padding: 10px;
+    }
+
+    .input-group-row {
+        grid-template-columns: 1fr; /* Stack fields on smaller screens */
+    }
+}
+
+@media (max-width: 500px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    table th, table td {
+        padding: 8px;
+    }
+}
+
+/* Show the online payment fields when online checkbox is checked */
+#online-fields {
+    display: none; /* Initially hide the fields */
+}
+
+/* When the online payment is selected, show the fields */
+#online-payment:checked ~ #online-fields {
+    display: block;
+}
+
+/* Styling for the "Amount to be Returned" section */
+#amount-to-return-group {
+    display: none;
+}
+
+#final-bill-group {
+    display: none;
+}

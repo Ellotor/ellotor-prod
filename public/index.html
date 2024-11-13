@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who is logging in?</title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fafafa   ;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Container for centering content */
+        .container {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #cfe7ff;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* Header styling */
+        h1 {
+            color: #007bff;
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Styling for buttons */
+        .btn {
+            background-color: #007bff;
+            color: white;
+            font-size: 18px;
+            padding: 12px 20px;
+            margin: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 200px;
+            transition: background-color 0.3s;
+        }
+
+        /* Button hover effect */
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Button focus state */
+        .btn:focus {
+            outline: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .btn {
+                width: 100%;
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Centered container with buttons -->
+    <div class="container">
+        <h1>Login As</h1>
+        <button class="btn" onclick="goToUser()">User</button>
+        <button class="btn" onclick="goToAdmin()">Admin</button>
+    </div>
+
+    <script>
+        function goToUser() {
+            // Redirect to the user page
+            window.location.href = "/first.html";  // Ensure this path is correct
+        }
+
+        async function goToAdmin() {
+            const password = prompt("Enter Admin password:");
+        
+            if (password) {
+                try {
+                    const response = await fetch('http://localhost:3000/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: 'admin', password: password })
+                    });
+        
+                    const result = await response.json();
+                    console.log(response.status, result);  // Log response for debugging
+        
+                    if (response.status === 200) {
+                        // Check if it's the first-time login flag
+                        if (result.firstTimeLogin) {
+                            const changePassword = confirm("It's your first time logging in. Would you like to change your password?");
+                            if (changePassword) {
+                                window.location.href = "/change-password.html";  // Ensure this path is correct
+                            } else {
+                                window.location.href = result.redirectTo;
+                            }
+                        } else {
+                            // If not first-time login, redirect directly
+                            window.location.href = result.redirectTo;
+                        }
+                    } else {
+                        alert(result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

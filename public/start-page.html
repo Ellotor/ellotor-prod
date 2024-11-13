@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Page</title>
+    <link rel="stylesheet" href="start-page.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="form-heading">Start Ride</h1>
+
+        <form id="start-form">
+            <!-- Row 1: Name, Mobile Number, and Start Time -->
+            <div class="row">
+                <div class="input-group name">
+					<!--input type="text" id="tokenNo" name="tokenNo" required-->
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" required placeholder="Enter Name">
+                </div>
+                <div class="input-group mobile">
+                    <label for="mobile">Mobile Number:</label>
+                    <input type="text" id="mobile" placeholder="Enter Mobile Number" maxlength="12" oninput="validateMobileNumber()">
+                    <span id="mobile-error" class="error-message"></span>
+                </div>
+                <div class="input-group start-time">
+                    <label for="start-time">Start Time:</label>
+                    <input type="text" id="start-time" disabled required>
+                </div>
+            </div>
+
+            <!-- Row 2: Select Rides and Security Amount -->
+            <div class="ro">
+                <!-- Select Rides -->
+                <div class="ride-selection">
+                    <h3>Select Rides:</h3>
+                    <div class="ride-option">
+                        <label for="single">Single</label>
+                        <button type="button" class="decrement" id="single-decrement">-</button>
+                        <input type="number" id="single" value="0" min="0">
+                        <button type="button"class="increment" id="single-increment">+</button>
+                    </div>
+                    <div class="ride-option">
+                        <label for="double">Double</label>
+                        <button type="button" class="decrement" id="double-decrement">-</button>
+                        <input type="number" id="double" value="0" min="0">
+                        <button type="button" class="increment" id="double-increment">+</button>
+                    </div>
+                    <div class="ride-option">
+                        <label for="ellotor">Ellotor</label>
+                        <button type="button" class="decrement" id="ellotor-decrement">-</button>
+                        <input type="number" id="ellotor" value="0" min="0">
+                        <button type="button"  class="increment" id="ellotor-increment">+</button>
+                    </div>
+                    <div class="ride-option">
+                        <label for="kids">Kids</label>
+                        <button type="button" class="decrement" id="kids-decrement">-</button>
+                        <input type="number" id="kids" value="0" min="0">
+                        <button type="button"  class="increment" id="kids-increment">+</button>
+                    </div>
+                    <div class="ride-option">
+                        <label for="babyride">Baby Ride</label>
+                        <button type="button" class="decrement" id="babyride-decrement">-</button>
+                        <input type="number" id="babyride" value="0" min="0">
+                        <button type="button"  class="increment" id="babyride-increment">+</button>
+                    </div>					
+                </div>
+
+                <!-- Security Amount -->
+                <div class="security-amount">
+                    <label>Security Amount:</label><br>
+                    <input type="checkbox" id="security-500"> 500
+                    <input type="checkbox" id="security-1000"> 1000
+                    <input type="checkbox" id="security-1500"> 1500
+                    <input type="checkbox" id="security-other"> Other
+					<div>
+						<input type="text" id="other-amount" class="hidden" placeholder="Enter custom amount" oninput="validateNumericInput(event)">
+					</div>
+                    <span id="security-error" class="error-message"></span>
+                </div>
+            </div>
+
+            <!-- Row 3: Mode to Pay Security Amount -->
+            <div class="payment-mode">
+                <label for="payment-mode">Mode to pay security amount:</label><br>
+                <input type="checkbox" id="offline"> Offline
+                <input type="checkbox" id="online"> Online
+            </div>
+
+            <!-- Row 4: Submit Button -->
+            <div class="submit-row">
+                <button type="submit">Submit</button>
+				<button type="back" id="back-button">Back</button>
+            </div>			
+        </form>
+    </div>
+
+    <script src="start-page.js"></script>
+</body>
+</html>

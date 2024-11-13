@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>End Ride</title>
+    <link rel="stylesheet" href="end.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Form to enter mobile number to fetch data -->
+        <form id="search-form">
+			<h1><span id="stand-name"></span></h1>
+            <h1>End Ride <span id="stand-name"></span></h1>
+            <div class="input-group" >
+                <label for="mobile">Mobile Number:</label>
+                <input type="text" id="mobile" placeholder="Enter Mobile Number" maxlength="12" oninput="validateMobileNumber()">
+				<span id="mobile-error" class="error-message"></span>
+            </div>
+            <button type="submit">End</button>
+            <button type="button" id="back-button-search" >Back</button> 
+        </form>
+
+        <!-- Billing Details Form -->
+        <div id="billing-details">
+            <h2>Billing Details</h2>
+            <form id="billing-form">
+                <!-- First Row: Token No, Name, Mobile -->
+                <div class="input-group-row">
+                    <div class="input-group">
+                        <label for="billing-token">Token No:</label>
+                        <input type="text" id="billing-token" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-name">Name:</label>
+                        <input type="text" id="billing-name" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-mobile">Mobile:</label>
+                        <input type="text" id="billing-mobile" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-security">Security Amount:</label>
+                        <input type="text" id="billing-security" disabled>
+                    </div>
+                </div>
+
+                <!-- Second Row: Start Time, End Time, Security Amount -->
+                <div class="input-group-row">
+                    <div class="input-group">
+                        <label for="billing-start-date">Start Time:</label>
+                        <input type="text" id="billing-start-date" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-end-date">End Time:</label>
+                        <input type="text" id="billing-end-date" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-ride-time">Total Ride Time (minutes):</label>
+                        <input type="text" id="billing-ride-time" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-ride-count">Total Rides (30 mins = 1 ride):</label>
+                        <input type="text" id="billing-ride-count" disabled>
+                    </div>
+                </div>
+
+                <!-- Third Row: Total Rides, Total Ride Time, Rides per 35 mins -->
+                <div class="input-group-row">
+                    <div class="input-group">
+                        <label for="billing-total-rides">Rides Taken:</label>
+                    </div>                
+                    <div class="input-group">
+                        <label for="billing-single-rides">Single: 30</label>
+                        <input type="text" id="billing-single-rides" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-double-rides">Double: 60</label>
+                        <input type="text" id="billing-double-rides" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-ellotor-rides">Ellotor: 150</label>
+                        <input type="text" id="billing-ellotor-rides" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-kids-rides">Kids: 30</label>
+                        <input type="text" id="billing-kids-rides" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-baby-rides">Baby Ride: 50</label>
+                        <input type="text" id="billing-baby-rides" disabled>
+                    </div>					
+                </div>
+
+                <!-- Fourth Row: Ride Amount, Penalty, Total Amount, Final Bill -->
+                <div class="input-group-row">
+                    <div class="input-group">
+                        <label for="billing-ride-amount">Ride Amount:</label>
+                        <input type="text" id="billing-ride-amount" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-penalty">Penalty (optional):</label>
+                        <input type="number" id="billing-penalty" min="0" step="1">
+                    </div>
+                    <div class="input-group" id="reason-group" style="display:none;">
+                        <label for="billing-reason">Reason (mandatory if penalty is filled):</label>
+                        <input type="text" id="billing-reason" >
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-total">Total Amount to Pay:</label>
+                        <input type="text" id="billing-total" disabled>
+                    </div>
+                </div>
+
+                <!-- Final Bill and Payment Mode in the same row -->
+                <div class="input-group-row">
+                    <div class="input-group" id="final-bill-group">
+                        <label for="billing-final-bill"><span id="final-bill-icon">+</span> Final Amount to be Recieved (after security adjustment):</label>
+                        <input type="text" id="billing-final-bill" class="reduced-size" disabled>
+                    </div>
+                    <div class="input-group" id="amount-to-return-group" style="display:none;">
+                        <label for="billing-amount-returned"><span id="amount-returned-icon">-</span> Amount to be Returned (after deducting payment from security):</label>
+                        <input type="text" id="billing-amount-returned" class="reduced-size" disabled>
+                    </div>
+                    <div class="input-group">
+                        <label for="billing-payment-mode">Payment Mode:</label>
+                        <div id="billing-payment-mode">
+                            <label for="online-payment">Online</label>
+                            <input type="checkbox" id="online-payment" name="payment-mode" value="online">
+                            <label for="offline-payment">Offline</label>
+                            <input type="checkbox" id="offline-payment" name="payment-mode" value="offline">
+                        </div>
+                    </div>
+
+                    <!-- Name and Mobile/UPI Fields (Initially Hidden) -->
+                    <div class="input-group" id="online-fields" style="display:none;">
+                        <div class="input-group">
+                            <label for="Banking-name">Name:</label>
+                            <input type="text" id="Banking-name" >
+                        </div>
+                        <div class="input-group">
+                            <label for="Banking-mobile">Mobile/UPI ID:</label>
+                            <input type="text" id="Banking-mobile" >
+                        </div>
+                    </div>
+					
+					<div id="billing-commentss" >
+                    <label for="billing-comments">Comment Box:</label>
+                    <textarea id="billing-comments" placeholder="Enter additional comments here..."></textarea>
+                </div>
+				</div>
+			<div id="buttons">
+                <button type="button" id="submit-billing-button">Submit Billing</button>
+				<button type="button" id="back-button-billing">Back</button>  
+			</div>
+            </form>
+        </div>
+
+        <!-- Table to display fetched data -->
+        <div id="data-display">
+            <h2>All Rides Taken</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Token No</th>
+						<th>Stand</th>
+                        <th>Mobile</th>
+                        <th>Start Time</th>
+						<th>End Time</th>
+                        <th>Security Amount</th>
+                        <th>Single Rides</th>
+                        <th>Double Rides</th>
+                        <th>Ellotor Rides</th>
+						<th>Kids Rides</th>
+						<th>Baby Rides</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    <!-- Data will be dynamically inserted here -->
+                </tbody>
+            </table>
+            <button type="button" id="back-button-table">Back</button> 
+        </div>
+
+        <div id="no-data-message">
+            <p>No data found for the given mobile number.</p>
+        </div>
+    </div>
+
+    <script src="end.js"></script>
+</body>
+</html>
