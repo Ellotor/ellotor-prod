@@ -295,161 +295,156 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     // Add event listeners to "END" buttons
-                    const endButtons = document.querySelectorAll('.end-button');
-                    endButtons.forEach(button => {
-                        button.addEventListener('click', function() {
-                            const tokenNo = this.getAttribute('data-token');
-                            // Fetch the details for this token and show the billing form
-                            fetch(`/getDataByTokenOrMobile?token=${encodeURIComponent(tokenNo)}&stand=${encodeURIComponent(stand)}`)
-                                .then(response => {
-                                    if (!response.ok) {
-                                        if (response.status === 404) {
-                                            throw new Error('User not found');
-                                        }
-                                        throw new Error('Failed to fetch token details');
-                                    }
-                                    return response.json();
-                                })
-                                .then(data => {
-                                    const record = data[0];
-                                    const billingDetails = document.getElementById('billing-details');
-                                    
-                                    // Hide the table and show the billing form
-                                    dataDisplay.style.display = 'none';
-                                    billingDetails.style.display = 'block';
-
-                                    // Fill in the billing form
-                                    document.getElementById('billing-token').value = record.tokenNo;
-                                    document.getElementById('billing-name').value = record.name;
-                                    document.getElementById('billing-mobile').value = record.mobile;
-                                    document.getElementById('billing-start-date').value = record.startTime;
-                                    const endTime = new Date();
-                                    document.getElementById('billing-end-date').value = endTime.toLocaleString();
-
-                                    // Calculate total ride time (in minutes)
-                                    const startTime = new Date(record.startTime);
-                                    const rideTime = Math.floor((endTime - startTime) / 60000); // Difference in minutes
-                                    document.getElementById('billing-ride-time').value = rideTime;
-
-                                    // Fill ride selections
-                                    document.getElementById('billing-single-rides').value = record.rideSelections.single;
-                                    document.getElementById('billing-double-rides').value = record.rideSelections.double;
-                                    document.getElementById('billing-ellotor-rides').value = record.rideSelections.ellotor;
-									document.getElementById('billing-kids-rides').value = record.rideSelections.kids;
-									document.getElementById('billing-baby-rides').value = record.rideSelections.babyride;
-
-                                    // Calculate total rides (30 mins = 1 ride, with custom rounding logic)
-                                    let totalRides = Math.floor(rideTime / 30);
-                                    const remainder = rideTime % 30;
-                                    if (remainder > 8) {
-                                        totalRides += 1;  // Round up if remainder is greater than 8
-                                    }
-                                    document.getElementById('billing-ride-count').value = totalRides;
-
-                                    // Calculate ride amount
-                                    const rideAmount = (record.rideSelections.single * 30) + (record.rideSelections.double * 60) + (record.rideSelections.ellotor * 150) +(record.rideSelections.kids * 30)+(record.rideSelections.babyride * 50);
-                                    const updatedRideAmount = rideAmount * totalRides;
-                                    document.getElementById('billing-ride-amount').value = updatedRideAmount;
-
-                                    // Fill in the security amount
-                                    document.getElementById('billing-security').value = record.securityAmount;
-
-                                    // Show reason field only if penalty is filled
-                                    const penaltyInput = document.getElementById('billing-penalty');
-                                    penaltyInput.addEventListener('input', function() {
-                                        if (penaltyInput.value < 0) {
-                                            alert("Please enter only a positive number for the penalty.");
-                                            penaltyInput.value = '';  // Optionally clear the field or leave it as is
-                                        }
-                                        const reasonGroup = document.getElementById('reason-group');
-                                        const billingReasonInput = document.getElementById('billing-reason');
-
-                                        if (this.value > 0) {
-                                            // Show the reason field and make it required
-                                            reasonGroup.style.display = 'block';
-                                            
-                                        } else {
-                                            // Hide the reason field and remove the 'required' attribute
-                                            reasonGroup.style.display = 'none';
-                                            
-                                        }
-
-                                        // Update the total amount when penalty is entered or removed
-                                        updateTotalAmount();
-                                    });
-
-                                    // Function to update the total amount including penalty
-                                    function updateTotalAmount() {
-                                        const penaltyAmount = parseFloat(penaltyInput.value) || 0;
-                                        const totalAmount = updatedRideAmount + penaltyAmount;
-                                        document.getElementById('billing-total').value = totalAmount;
-                                        
-                                        const billingname = document.getElementById('billing-name');
-                                        const billingmobile = document.getElementById('billing-mobile');
-                                        // Logic for final bill or amount to return
-                                        const securityAmount = record.securityAmount;
-                                        if (totalAmount < securityAmount) {
-                                            const amountReturned = securityAmount - totalAmount;
-                                            document.getElementById('billing-amount-returned').value = amountReturned;
+					const endButtons = document.querySelectorAll('.end-button');
+					endButtons.forEach(button => {
+						button.addEventListener('click', function() {
+							const tokenNo = this.getAttribute('data-token');
+							// Fetch the details for this token and show the billing form
+							fetch(`/getDataByTokenOrMobile?token=${encodeURIComponent(tokenNo)}&stand=${encodeURIComponent(stand)}`)
+								.then(response => {
+									if (!response.ok) {
+										if (response.status === 404) {
+											throw new Error('User not found');
+										}
+										throw new Error('Failed to fetch token details');
+									}
+									return response.json();
+								})
+								.then(data => {
+									const record = data[0];
+									const billingDetails = document.getElementById('billing-details');
+									const dataDisplay = document.getElementById('data-display');
+					
+									// Hide the table and show the billing form
+									dataDisplay.style.display = 'none';
+									billingDetails.style.display = 'block';
+					
+									// Fill in the billing form
+									document.getElementById('billing-token').value = record.tokenNo;
+									document.getElementById('billing-name').value = record.name;
+									document.getElementById('billing-mobile').value = record.mobile;
+									document.getElementById('billing-start-date').value = record.startTime;
+									const endTime = new Date();
+									document.getElementById('billing-end-date').value = endTime.toLocaleString();
+					
+									// Calculate total ride time (in minutes)
+									const startTime = new Date(record.startTime);
+									const rideTime = Math.floor((endTime - startTime) / 60000); // Difference in minutes
+									document.getElementById('billing-ride-time').value = isNaN(rideTime) ? 0 : rideTime;
+					
+									// Fill ride selections
+									document.getElementById('billing-single-rides').value = record.rideSelections.single || 0;
+									document.getElementById('billing-double-rides').value = record.rideSelections.double || 0;
+									document.getElementById('billing-ellotor-rides').value = record.rideSelections.ellotor || 0;
+									document.getElementById('billing-kids-rides').value = record.rideSelections.kids || 0;
+									document.getElementById('billing-baby-rides').value = record.rideSelections.babyride || 0;
+					
+									// Calculate total rides (30 mins = 1 ride, with custom rounding logic)
+									let totalRides = Math.floor(rideTime / 30);
+									const remainder = rideTime % 30;
+									if (remainder > 8) {
+										totalRides += 1;  // Round up if remainder is greater than 8
+									}
+									document.getElementById('billing-ride-count').value = totalRides;
+					
+									// Calculate ride amount
+									const rideAmount = (record.rideSelections.single * 30) + 
+													(record.rideSelections.double * 60) + 
+													(record.rideSelections.ellotor * 150) +
+													(record.rideSelections.kids * 30) + 
+													(record.rideSelections.babyride * 50);
+									const updatedRideAmount = rideAmount * totalRides;
+									document.getElementById('billing-ride-amount').value = isNaN(updatedRideAmount) ? 0 : updatedRideAmount;
+					
+									// Fill in the security amount
+									document.getElementById('billing-security').value = record.securityAmount || 0;
+					
+									// Show reason field only if penalty is filled
+									const penaltyInput = document.getElementById('billing-penalty');
+									penaltyInput.addEventListener('input', function() {
+										if (penaltyInput.value < 0) {
+											alert("Please enter only a positive number for the penalty.");
+											penaltyInput.value = '';  // Optionally clear the field or leave it as is
+										}
+										const reasonGroup = document.getElementById('reason-group');
+										const billingReasonInput = document.getElementById('billing-reason');
+					
+										if (this.value > 0) {
+											// Show the reason field and make it required
+											reasonGroup.style.display = 'block';
+										} else {
+											// Hide the reason field and remove the 'required' attribute
+											reasonGroup.style.display = 'none';
+										}
+					
+										// Update the total amount when penalty is entered or removed
+										updateTotalAmount();
+									});
+					
+									// Function to update the total amount including penalty
+									function updateTotalAmount() {
+										const penaltyAmount = parseFloat(penaltyInput.value) || 0;
+										const totalAmount = updatedRideAmount + penaltyAmount;
+										document.getElementById('billing-total').value = isNaN(totalAmount) ? 0 : totalAmount;
+					
+										const billingname = document.getElementById('billing-name');
+										const billingmobile = document.getElementById('billing-mobile');
+										// Logic for final bill or amount to return
+										const securityAmount = record.securityAmount || 0;
+										if (totalAmount < securityAmount) {
+											const amountReturned = securityAmount - totalAmount;
+											document.getElementById('billing-amount-returned').value = isNaN(amountReturned) ? 0 : amountReturned;
 											document.getElementById('billing-final-bill').value = 0;
-                                            
-                                            document.getElementById('amount-to-return-group').style.display = 'block';
-                                            onlineFields.style.display = 'block';
-                                            document.getElementById('final-bill-group').style.display = 'none';
-                                        } else {
-                                            const finalBill = totalAmount - securityAmount;
-                                            document.getElementById('billing-final-bill').value = finalBill;
+					
+											document.getElementById('amount-to-return-group').style.display = 'block';
+											onlineFields.style.display = 'block';
+											document.getElementById('final-bill-group').style.display = 'none';
+										} else {
+											const finalBill = totalAmount - securityAmount;
+											document.getElementById('billing-final-bill').value = isNaN(finalBill) ? 0 : finalBill;
 											document.getElementById('billing-amount-returned').value = 0;
-                                            document.getElementById('final-bill-group').style.display = 'block';
-                                            onlineFields.style.display = 'none';
-                                            document.getElementById('amount-to-return-group').style.display = 'none';
-                                        }
-                                    }
-
-                                    // Call updateTotalAmount initially in case there is a penalty pre-filled
-                                    updateTotalAmount();
-
-                                    // Handle online/offline payment logic
-                                    const onlineCheckbox = document.getElementById('online-payment');
-                                    const offlineCheckbox = document.getElementById('offline-payment');
-
-                                    // Handle checkbox logic for online/offline payment
-                                    onlineCheckbox.addEventListener('change', function() {
-                                        if (onlineCheckbox.checked) {
-                                            offlineCheckbox.disabled = true; // Show the fields for online payment
-                                        } else {
-                                            offlineCheckbox.disabled = false;
-                                              // Hide the fields for online payment
-                                        }
-                                    });
-
-                                    offlineCheckbox.addEventListener('change', function() {
-                                        if (offlineCheckbox.checked) {
-                                            onlineCheckbox.disabled = true;
-                                        } else {
-                                            onlineCheckbox.disabled = false;
-                                        }
-                                    });
-
-                                    // Back Button for Billing Form
-                                    document.getElementById('back-button-billing').addEventListener('click', function() {
-                                        const billingDetails = document.getElementById('billing-details');
-                                        const dataDisplay = document.getElementById('data-display');
-                                        const searchForm = document.getElementById('search-form');
-                                        // Hide the billing details and show the search form again
-                                        billingDetails.style.display = 'none';
-                                        searchForm.style.display = 'block';
-                                        dataDisplay.style.display = 'none';
-                                    });
-                                })
-                                .catch(error => {
-                                    // Handle fetch error
-                                    alert(error.message);
-                                });
-                        });
-                    });
-                }
-            })
+											document.getElementById('final-bill-group').style.display = 'block';
+											onlineFields.style.display = 'none';
+											document.getElementById('amount-to-return-group').style.display = 'none';
+										}
+									}
+					
+									// Call updateTotalAmount initially in case there is a penalty pre-filled
+									updateTotalAmount();
+					
+									// Handle online/offline payment logic
+									const onlineCheckbox = document.getElementById('online-payment');
+									const offlineCheckbox = document.getElementById('offline-payment');
+					
+									// Handle checkbox logic for online/offline payment
+									onlineCheckbox.addEventListener('change', function() {
+										if (onlineCheckbox.checked) {
+											offlineCheckbox.disabled = true; // Show the fields for online payment
+										} else {
+											offlineCheckbox.disabled = false;
+											// Hide the fields for online payment
+										}
+									});
+					
+									offlineCheckbox.addEventListener('change', function() {
+										if (offlineCheckbox.checked) {
+											onlineCheckbox.disabled = true;
+										} else {
+											onlineCheckbox.disabled = false;
+										}
+									});
+					
+									// Back Button for Billing Form
+									document.getElementById('back-button-billing').addEventListener('click', function() {
+										const billingDetails = document.getElementById('billing-details');
+										const dataDisplay = document.getElementById('data-display');
+										const searchForm = document.getElementById('search-form');
+										// Hide the billing details and show the search form again
+										billingDetails.style.display = 'none';
+										searchForm.style.display = 'block';
+										dataDisplay.style.display = 'none';
+									});
+								})
             .catch(error => {
                 // Handle fetch error
                 alert(error.message);
