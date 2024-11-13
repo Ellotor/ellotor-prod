@@ -5,10 +5,20 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const axios = require('axios');  // Import axios to send ping requests
 const Admin = require('./models/admin');  // Import the Admin model
+const cors = require('cors'); 
 
 const app = express();
-const port = process.env.PORT || 3000;  // Allow port to be set by environment variable
+const port = process.env.PORT; // Allow port to be set by environment variable
+// CORS configuration
+const corsOptions = {
+  origin: 'https://ellotor-prod.onrender.com', // Allow only this frontend domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  credentials: true,  // Allow credentials (cookies, etc.)
+};
 
+// Enable CORS for the API
+app.use(cors(corsOptions));
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
 

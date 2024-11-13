@@ -24,7 +24,9 @@ adminSchema.pre('save', async function(next) {
         if (this.isModified('password') || this.isNew) {
             // Hash the password only if it has been modified or is new
             const salt = await bcrypt.genSalt(10);
-            this.password = await bcrypt.hash(this.password, salt);
+            const hashedPassword = await bcrypt.hash(this.password, salt);
+            console.log('Hashed password:', hashedPassword);  // Debugging line
+            this.password = hashedPassword;
         }
         next();
     } catch (err) {
@@ -38,7 +40,8 @@ adminSchema.methods.comparePassword = async function(password) {
         const isMatch = await bcrypt.compare(password, this.password);
         return isMatch;
     } catch (err) {
-        throw new Error('Error comparing password');  // Throw an error if comparison fails
+        console.error("Error comparing password:", err);  // Log the error
+        return false;  // Return false to indicate password mismatch
     }
 };
 
