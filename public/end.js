@@ -348,20 +348,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("billing-name").value = record.name;
                     document.getElementById("billing-mobile").value =
                       record.mobile;
-                    document.getElementById("billing-start-date").value =
-                      record.startTime;
-                    const endTime = new Date();
-                    document.getElementById("billing-end-date").value =
-                      endTime.toLocaleString();
+
+					// Get the current end time and format it
+					const endTime = new Date();
+					document.getElementById("billing-end-date").value = formatDate(endTime);
 
                     // Calculate total ride time (in minutes)
                     const startTime = new Date(record.startTime);
-                    const rideTime = Math.floor((endTime - startTime) / 60000); // Difference in minutes
-                    document.getElementById("billing-ride-time").value = isNaN(
-                      rideTime,
-                    )
-                      ? 0
-                      : rideTime;
+					if (isNaN(startTime.getTime())) {
+					console.error("Invalid start time:", record.startTime);
+					document.getElementById("billing-start-date").value = "";
+					} else {
+					document.getElementById("billing-start-date").value = formatDate(startTime);
+					}
+					// Calculate total ride time in minutes
+					const rideTime = Math.floor((endTime - startTime) / 60000); // Difference in minutes
+					document.getElementById("billing-ride-time").value = isNaN(rideTime) ? 0 : rideTime
 
                     // Fill ride selections
                     document.getElementById("billing-single-rides").value =
