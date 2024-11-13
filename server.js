@@ -63,26 +63,20 @@ app.post('/admin/login', async (req, res) => {
             return res.status(404).json({ message: 'Admin not found' });
         }
 
+        console.log('Stored hashed password:', admin.password);
+        console.log('Entered password:', password);
+
         const isPasswordValid = await admin.comparePassword(password);
-        
+
         if (isPasswordValid) {
-            // Check if this is the first-time login
-            if (admin.firstTimeLogin) {
-                return res.json({
-                    message: 'Access granted',
-                    firstTimeLogin: true,  // Indicate that it's the first-time login
-                    redirectTo: '/change-password.html'  // Prompt to change password
-                });
-            } else {
-                return res.json({
-                    message: 'Access granted',
-                    redirectTo: '/admin.html'  // Regular admin page if not first-time login
-                });
-            }
+            console.log('Password comparison success');
+            // Continue with your logic...
         } else {
+            console.log('Password comparison failed');
             return res.status(401).json({ message: 'Incorrect password' });
         }
     } catch (err) {
+        console.error('Error during login:', err);
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 });
