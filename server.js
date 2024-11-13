@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
+const axios = require('axios');  // Import axios to send ping requests
 const Admin = require('./models/admin');  // Import the Admin model
 
 const app = express();
@@ -280,6 +281,23 @@ app.delete('/deleteAllUsers', async (req, res) => {
 
 
 
+// Function to keep the app alive
+const keepAppAlive = () => {
+  setInterval(() => {
+    axios.get(`https://ellotor-prod.onrender.com/`)
+      .then(response => {
+        console.log('Ping successful:', response.status);
+      })
+      .catch(error => {
+        console.error('Ping failed:', error.message);
+      });
+  }, 300000);  // 5 minutes (in milliseconds)
+};
+
+// Start keeping the app alive when the server starts
+keepAppAlive();
+
 // Start the server
 app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
