@@ -15,8 +15,8 @@ const userSchema = new mongoose.Schema({
         single: { type: Number, default: 0 },
         double: { type: Number, default: 0 },
         ellotor: { type: Number, default: 0 },
-		kids : { type: Number, default: 0 },
-		babyride : { type: Number, default: 0 }
+        kids: { type: Number, default: 0 },
+        babyride: { type: Number, default: 0 }
     },
     // New fields
     finalBill: { type: Number, default: 0 }, // New field for final bill
@@ -36,10 +36,28 @@ userSchema.pre('save', async function(next) {
         console.log("Generated tokenNo:", this.tokenNo);  // Debugging line
         console.log("Last user:", lastUser);
     }
+
+    // Ensure all fields that should be numbers are properly cast from strings
+    if (typeof this.securityAmount === 'string') {
+        this.securityAmount = parseFloat(this.securityAmount) || 0;  // Cast to number
+    }
+    if (typeof this.finalBill === 'string') {
+        this.finalBill = parseFloat(this.finalBill) || 0;  // Cast to number
+    }
+    if (typeof this.penalty === 'string') {
+        this.penalty = parseFloat(this.penalty) || 0;  // Cast to number
+    }
+
+    // Cast numbers inside rideSelections
+    for (let key in this.rideSelections) {
+        if (typeof this.rideSelections[key] === 'string') {
+            this.rideSelections[key] = parseInt(this.rideSelections[key], 10) || 0; // Convert to number
+        }
+    }
+
     next();
 });
 
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
-
