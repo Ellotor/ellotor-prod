@@ -40,22 +40,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Security "Other" input validation: Ensure it's numeric
-    function validateNumericInput(event) {
-        const value = event.target.value;
-        if (isNaN(value) || value.trim() === "") {
-            securityError.textContent = "Please enter a valid number.";
-            event.target.setCustomValidity("Please enter a valid number");
-        } else {
-            securityError.textContent = "";
-            event.target.setCustomValidity("");
-        }
+    // Function to format date into YYYY-MM-DD HH:mm:ss format
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 
     // Event listener to populate start time as soon as the name is entered
     nameInput.addEventListener('input', function() {
         if (nameInput.value.trim() !== '') {
-            startTimeInput.value = new Date().toLocaleString();
+            // Set the current time as start time and format it
+            const currentTime = new Date();
+            startTimeInput.value = formatDate(currentTime);
             mobileInput.value = '91';
             validateMobileNumber();  // Ensure mobile number is validated
         }
@@ -164,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('babyride-decrement').addEventListener('click', function() {
         updateRideQuantity('babyride', false);
-    });	
+    });    
 
     // Revalidate fields on input to ensure updated values are valid
     mobileInput.addEventListener('input', validateMobileNumber);
@@ -191,8 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const singleQy = parseInt(document.getElementById('single').value);
         const doubleQy = parseInt(document.getElementById('double').value);
         const ellotorQy = parseInt(document.getElementById('ellotor').value);
-		const kidsQy = parseInt(document.getElementById('kids').value);
-		const babyriderQy = parseInt(document.getElementById('babyride').value);
+        const kidsQy = parseInt(document.getElementById('kids').value);
+        const babyriderQy = parseInt(document.getElementById('babyride').value);
         const selectedSecurityAmount = security500.checked || security1000.checked || security1500.checked || (securityOther.checked && securityOtherInput.value.trim() !== "");
         const selectedPaymentMode = offlineCheckbox.checked || onlineCheckbox.checked;
 
@@ -234,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get form values
         const name = nameInput.value;
-        const startTime = startTimeInput.value;
+        const startTime = startTimeInput.value; // Ensure this value is formatted
         const endTime = ''; // Placeholder as endTime isn't defined in HTML
         const paymentMode = offlineCheckbox.checked ? 'Offline' : 'Online';
         
@@ -242,8 +243,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const singleQty = parseInt(document.getElementById('single').value);
         const doubleQty = parseInt(document.getElementById('double').value);
         const ellotorQty = parseInt(document.getElementById('ellotor').value);
-		const kidsQty = parseInt(document.getElementById('kids').value);
-		const babyrideQty = parseInt(document.getElementById('babyride').value);
+        const kidsQty = parseInt(document.getElementById('kids').value);
+        const babyrideQty = parseInt(document.getElementById('babyride').value);
         
         // Get the selected security amount
         const securityAmount = security500.checked ? 500 :
@@ -255,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const allCheckboxes = [security500, security1000, security1500, securityOther, offlineCheckbox, onlineCheckbox];
         allCheckboxes.forEach(checkbox => checkbox.disabled = false);
         securityOtherInput.style.display = 'none';
-		
+        
         // Send the data to the server
         fetch('/submitData', {
             method: 'POST',
@@ -275,8 +276,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     single: singleQty,
                     double: doubleQty,
                     ellotor: ellotorQty,
-					kids:kidsQty,
-					babyride:babyrideQty
+                    kids: kidsQty,
+                    babyride: babyrideQty
                 }
             })
         })
