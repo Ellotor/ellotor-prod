@@ -348,7 +348,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("billing-name").value = record.name;
                     document.getElementById("billing-mobile").value =
                       record.mobile;
-
+					// Function to format date into YYYY-MM-DD HH:mm:ss format
+					function formatDate(date) {
+					const year = date.getFullYear();
+					const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+					const day = String(date.getDate()).padStart(2, '0');
+					const hours = String(date.getHours()).padStart(2, '0');
+					const minutes = String(date.getMinutes()).padStart(2, '0');
+					const seconds = String(date.getSeconds()).padStart(2, '0');
+					return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+					}
 					// Get the current end time and format it
 					const endTime = new Date();
 					document.getElementById("billing-end-date").value = formatDate(endTime);
