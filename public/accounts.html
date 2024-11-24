@@ -269,10 +269,13 @@
 
                     // Calculating Amount Received and Amount Returned based on Final Payment Mode
                     if (finalBill > 0) {
-                        amountReceived = finalBill;  // Amount received is based on final bill
+                          // Amount received is based on final bill
                         if (securityAmount > finalBill) {
                             amountReturned = securityAmount - finalBill; // Security greater than final bill is returned
                         }
+						else {
+						amountReceived = finalBill-securityAmount;
+						}
                     }
 
                     // **Security Amount Calculation based on Payment Mode**
