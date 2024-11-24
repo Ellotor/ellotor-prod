@@ -25,13 +25,13 @@
         .back-btn {
             background-color: #007bff;
             color: white;
+            margin: 20px;
             padding: 10px 20px;
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            position: absolute;
-            top: 20px;
-            left: 20px;
+			top: 20px;
+            left: 20px
         }
 
         .back-btn:hover {
@@ -283,12 +283,12 @@
                     `;
 
                     // Append to correct table
-                    if (item.finalPaymentMode === 'Online') {
+                    if (item.paymentMode === 'Online') {
                         onlineTableBody.appendChild(row);
                         onlineTotalReceived += amountReceived;
                         onlineTotalReturned += amountReturned;
                         onlineSecurity += item.securityAmount;
-                    } else if (item.finalPaymentMode === 'Offline') {
+                    } else if (item.paymentMode === 'Offline') {
                         offlineTableBody.appendChild(row);
                         offlineTotalReceived += amountReceived;
                         offlineTotalReturned += amountReturned;
@@ -313,7 +313,7 @@
                 // Update Net Amount Section for Offline
                 document.getElementById('securityOffline').textContent = offlineSecurity.toFixed(2);
                 document.getElementById('totalOfflineBilling').textContent = offlineTotalReturned.toFixed(2);
-                const netOfflineAmount = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
+                cconst netOfflineAmount = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
                 document.getElementById('netOfflineAmount').textContent = netOfflineAmount.toFixed(2);
 
             } catch (error) {
