@@ -188,6 +188,27 @@ button.decrement:focus {
 .input-group.start-time label {
     font-weight: bold;
 }
+/* Input fields for Name, Mobile, and Start Time */
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group input[type="date"] {
+    padding: 14px;               /* Same padding as the select box */
+    font-size: 16px;             /* Same font size as the select box */
+    border-radius: 8px;          /* Same border radius as the select box */
+    border: 1px solid #ccc;     /* Same border style as the select box */
+    background-color: #fff;     /* Same background color as the select box */
+    color: black;               /* Text color */
+    outline: none;              /* No outline when focused */
+    width: 100%;                /* Make input field take full width */
+    transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
+/* Focus effect for name, mobile, and start-time input fields */
+.input-group input[type="text"]:focus,
+.input-group input[type="number"]:focus,
+.input-group input[type="date"]:focus {
+    border-color: #007bff; /* Change border color to blue when focused */
+}
 
 /* Submit button styling */
 .submit-row {

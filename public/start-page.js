@@ -205,7 +205,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (securityOther.checked) {
             validateNumericInput({ target: securityOtherInput });
         }
-
+		// Check if the stand is selected (if 'stand' is null or empty)
+		if (!stand || stand === '') {
+			alert("Please select a stand before submitting.");
+			return; // Prevent form submission
+		}
         // Check if all required fields are filled
         const singleQy = parseInt(document.getElementById('single').value);
         const doubleQy = parseInt(document.getElementById('double').value);
@@ -304,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.message === 'Data saved successfully') {
                 alert(`Form submitted successfully! Token number: ${data.tokenNo}`);
                 // Send WhatsApp message
-                const message = `Hello ${name}, your ride details are as follows:\n- Start Time: ${startTime}\n- Security Amount: ${securityAmount}\n- Token No.: ${data.tokenNo}`; 
+                const message = `Hello ${name}, your ride details are as follows:\n- Start Time: ${startTime}\n- Security Amount: ${securityAmount}\n- Token No.: ${data.tokenNo}\n\nEnjoy your ride!\n\nImportant Terms and Conditions:\n1. साईकिल कम से कम 30 मिनट के लिये ही दी जाएगी।\n2. साईकिल 30 मिनट के स्लोट के हिसाब से दी जाएगी।\n3. अगर साईकिल 5 मिनट के उपरान्त जमा की जा रही है तो शुल्क 30 मिनट का अतरिक्त चार्ज लिया जायेगा।\n4. साईकिल के साथ साईकिल की पर्ची ले जाने व वापस करने की जिम्मेदारी स्वयं साईकिल वाहक की होगी।\n5. जितनी साईकिल ली है उतनी ही पर्ची ऑपरेटर से लें।\n6. साईकिल की पर्ची खो जाने पर 50 रू. दण्ड के रूप में जमा किया जायेगा।\n7. साईकिल लेने के लिये ग्राहक से 500 रू. की सिक्योरिटी एवं 1 आई. डी. जमा की जायेगी एवं समयानुसार साईकिल जमा कराने पर साईकिल का किराया की राशि काट कर बाकी धनराशि ग्राहक को वापस कर दी जायेगी।\n8. साईकिल में ग्राहक द्वारा किसी भी प्रकार की टूट-फूट होने की दशा में ग्राहक की सिक्योरिटी राशि से साईकिल के नुकसान की भरपाई की जायेगी।\n9. साईकिल को पार्क की सीमा में ही चलाये सीमा से बाहर जाने पर आपके उपर सरकार और कम्पनी द्वारा सख्त कार्यवाही की जायेगी।\n10. स्टैण्ड और स्टैण्ड पर मौजूद साईकिल से छेड़खानी न करें अन्यथा उसके नुकसान की भरपाई आपसे की जायेगी।\n11. साईकिल ऑपरेटर से किसी भी प्रकार का वाद-विवाद न करें यह नियम कम्पनी द्वारा निर्धारित किये गये हैं, नियमों के उलंघन करने पर सरकार और कम्पनी द्वारा सख्त कार्यवाही की जायेगी।`;
                 const encodedMessage = encodeURIComponent(message);  // Ensure the message is URL-encoded
                 const whatsappUrl = `https://wa.me/${mobile}?text=${encodedMessage}`; // Include the message
            
