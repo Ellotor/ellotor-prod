@@ -228,8 +228,10 @@
 
         let onlineSecurity = 0;
         let offlineSecurity = 0;
-        let onlineTotal = 0;
-        let offlineTotal = 0;
+        let onlineTotalReceived = 0;
+        let onlineTotalReturned = 0;
+        let offlineTotalReceived = 0;
+        let offlineTotalReturned = 0;
 
         // Function to handle stand filter change
         function filterData(stand) {
@@ -242,54 +244,74 @@
                 const response = await fetch('/getAllData');
                 const data = await response.json();
 
-                let onlineTotalReceived = 0;
-                let onlineTotalReturned = 0;
-                let offlineTotalReceived = 0;
-                let offlineTotalReturned = 0;
-
                 const onlineTableBody = document.getElementById('onlineBillingTableBody');
                 const offlineTableBody = document.getElementById('offlineBillingTableBody');
                 onlineTableBody.innerHTML = '';  // Clear previous data
                 offlineTableBody.innerHTML = '';  // Clear previous data
 
+                onlineSecurity = 0;
+                offlineSecurity = 0;
+                onlineTotalReceived = 0;
+                onlineTotalReturned = 0;
+                offlineTotalReceived = 0;
+                offlineTotalReturned = 0;
+
+                // Filter and display data based on selected stand
                 data.forEach(item => {
                     // Filter data based on selected stand
                     if (selectedStand !== 'all' && item.stand !== selectedStand) {
                         return;  // Skip this item if it doesn't match the selected stand
                     }
 
-                    // Calculate Amount Received and Amount Returned
                     let amountReceived = 0;
                     let amountReturned = 0;
                     const securityAmount = item.securityAmount;
                     const finalBill = item.finalBill;
 
+                    // Calculate Amount Received and Amount Returned
                     if (securityAmount > finalBill) {
                         amountReturned = securityAmount - finalBill;
                     } else {
                         amountReceived = securityAmount + finalBill;
                     }
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.tokenNo}</td>
-                        <td>${item.name}</td>
-                        <td>${item.mobile}</td>
-                        <td>${item.paymentMode}</td>
-                        <td>${item.finalPaymentMode}</td>
-                        <td>${finalBill}</td>
-                        <td>${amountReceived}</td>
-                        <td>${amountReturned}</td>
-                    `;
-
-                    // Append to correct table
-                    if (item.paymentMode === 'Online') {
+                    // Online Billing: Display data where finalPaymentMode is 'Online'
+                    if (item.finalPaymentMode === 'Online') {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.tokenNo}</td>
+                            <td>${item.name}</td>
+                            <td>${item.mobile}</td>
+                            <td>${item.paymentMode}</td>
+                            <td>${item.finalPaymentMode}</td>
+                            <td>${finalBill}</td>
+                            <td>${amountReceived}</td>
+                            <td>${amountReturned}</td>
+                        `;
                         onlineTableBody.appendChild(row);
+
+                        // Update totals for online
                         onlineTotalReceived += amountReceived;
                         onlineTotalReturned += amountReturned;
                         onlineSecurity += item.securityAmount;
-                    } else if (item.paymentMode === 'Offline') {
+                    }
+
+                    // Offline Billing: Display data where finalPaymentMode is 'Offline'
+                    if (item.finalPaymentMode === 'Offline') {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.tokenNo}</td>
+                            <td>${item.name}</td>
+                            <td>${item.mobile}</td>
+                            <td>${item.paymentMode}</td>
+                            <td>${item.finalPaymentMode}</td>
+                            <td>${finalBill}</td>
+                            <td>${amountReceived}</td>
+                            <td>${amountReturned}</td>
+                        `;
                         offlineTableBody.appendChild(row);
+
+                        // Update totals for offline
                         offlineTotalReceived += amountReceived;
                         offlineTotalReturned += amountReturned;
                         offlineSecurity += item.securityAmount;
