@@ -50,11 +50,34 @@
             background-color: #218838;
         }
 
+        /* Back Button Styling */
+        .back-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            width: 200px;
+            margin: 20px auto;
+        }
+
+        .back-btn:hover {
+            background-color: #5a6268;
+        }
+
         /* Responsive design */
         @media (max-width: 768px) {
             .btn {
                 width: 100%;
                 margin: 10px 0;
+            }
+
+            .back-btn {
+                width: 100%;
             }
         }
     </style>
@@ -63,6 +86,9 @@
 <body>
 
     <h1>Admin Dashboard</h1>
+
+    <!-- Back Button -->
+    <button class="back-btn" onclick="window.history.back()">Back</button>
 
     <!-- Navigation Buttons -->
     <div class="btn-container" style="text-align: center;">

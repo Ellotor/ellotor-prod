@@ -25,11 +25,13 @@
         .back-btn {
             background-color: #007bff;
             color: white;
-            margin: 20px;
             padding: 10px 20px;
             cursor: pointer;
             border: none;
             border-radius: 5px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
 
         .back-btn:hover {
@@ -56,7 +58,7 @@
             padding: 12px 25px;
             position: absolute;
             top: 20px;
-            right: 200px;
+            right: 200px; /* Position it to the left of download button */
             cursor: pointer;
             display: none;
         }
@@ -185,6 +187,9 @@
             const table = document.getElementById("billingTable");
             const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
             XLSX.writeFile(workbook, "billing_data.xlsx");
+
+            // Show the delete button after download
+            document.querySelector('.delete-btn').style.display = 'inline-block';
         }
 
         function confirmDelete() {
