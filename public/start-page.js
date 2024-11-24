@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // If stand is present in the URL, set the dropdown value
     if (stand) {
         standSelect.value = stand;
+		sessionStorage.setItem('selectedStand', stand);  // Save stand value in session storage
     }
 	
     const form = document.getElementById('start-form');
@@ -315,6 +316,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.open(whatsappUrl, '_blank'); // Open WhatsApp with the message
 
                 form.reset();
+                standSelect.value = stand; // Re-select the stand value
+                sessionStorage.removeItem('selectedStand'); // Clear stored stand value				
             } else {
                 alert('Error saving data');
             }
@@ -332,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
             securityError.textContent = "";
             mobileInput.setCustomValidity('');
             securityOtherInput.setCustomValidity('');
-            
+            form.reset();
             const previousPage = sessionStorage.getItem('previousPage');
             if (previousPage) {
                 window.location.href = previousPage;  // Navigate to the previous page stored in sessionStorage
