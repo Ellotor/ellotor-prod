@@ -246,7 +246,8 @@
             try {
                 const response = await fetch('/getAllData');
                 const data = await response.json();
-
+				onlineSecurity = 0;
+				offlineSecurity = 0;
                 onlineTotalReceived = 0;
                 onlineTotalReturned = 0;
                 offlineTotalReceived = 0;
