@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update the form heading
     document.getElementById('form-heading').innerText = `${action.charAt(0).toUpperCase() + action.slice(1)} : ${stand}`;
     
+	const standSelect = document.getElementById('stand');
+    
+    // If stand is present in the URL, set the dropdown value
+    if (stand) {
+        standSelect.value = stand;
+    }
+	
     const form = document.getElementById('start-form');
     const startTimeInput = document.getElementById('start-time');
     const nameInput = document.getElementById('name');
