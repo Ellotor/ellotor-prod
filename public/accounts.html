@@ -283,7 +283,7 @@
                     }
 
                     // Append data to tables
-                    if (item.finalPaymentMode === 'Online') {
+                    if (item.finalPaymentMode === 'online') {
                         onlineTableBody.innerHTML += `
                             <tr>
                                 <td>${item.tokenNo}</td>
@@ -297,7 +297,7 @@
                             </tr>`;
                         onlineTotalReceived += amountReceived;
                         onlineTotalReturned += amountReturned;
-                    } else if (item.finalPaymentMode === 'Offline') {
+                    } else if (item.finalPaymentMode === 'offline') {
                         offlineTableBody.innerHTML += `
                             <tr>
                                 <td>${item.tokenNo}</td>
