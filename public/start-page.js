@@ -46,6 +46,17 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileInput.setCustomValidity('');
         }
     }
+	// Security "Other" input validation: Ensure it's numeric
+    function validateNumericInput(event) {
+        const value = event.target.value;
+        if (isNaN(value) || value.trim() === "") {
+            securityError.textContent = "Please enter a valid number.";
+            event.target.setCustomValidity("Please enter a valid number");
+        } else {
+            securityError.textContent = "";
+            event.target.setCustomValidity("");
+        }
+    }
 
     // Function to format date into YYYY-MM-DD HH:mm:ss format
     function formatDate(date) {
