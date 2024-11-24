@@ -313,7 +313,7 @@
                 // Update Net Amount Section for Offline
                 document.getElementById('securityOffline').textContent = offlineSecurity.toFixed(2);
                 document.getElementById('totalOfflineBilling').textContent = offlineTotalReturned.toFixed(2);
-                cconst netOfflineAmount = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
+                const netOfflineAmount = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
                 document.getElementById('netOfflineAmount').textContent = netOfflineAmount.toFixed(2);
 
             } catch (error) {
