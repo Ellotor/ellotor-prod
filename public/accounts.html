@@ -30,8 +30,9 @@
             cursor: pointer;
             border: none;
             border-radius: 5px;
-			top: 20px;
-            left: 20px
+            position: fixed;
+            top: 20px;
+            left: 20px;
         }
 
         .back-btn:hover {
@@ -130,10 +131,10 @@
     <!-- Stand Buttons for Filtering -->
     <div class="stand-buttons">
         <button onclick="filterData('all')">All</button>
-        <button onclick="filterData('stand1')">Stand 1</button>
-        <button onclick="filterData('stand2')">Stand 2</button>
-        <button onclick="filterData('stand3')">Stand 3</button>
-        <button onclick="filterData('stand4')">Stand 4</button>
+        <button onclick="filterData('Stand-1')">Stand 1</button>
+        <button onclick="filterData('Stand-2')">Stand 2</button>
+        <button onclick="filterData('Stand-3')">Stand 3</button>
+        <button onclick="filterData('Stand-4')">Stand 4</button>
     </div>
 
     <!-- Online Billing Section -->
@@ -228,8 +229,10 @@
 
         let onlineSecurity = 0;
         let offlineSecurity = 0;
-        let onlineTotal = 0;
-        let offlineTotal = 0;
+        let onlineTotalReceived = 0;
+        let onlineTotalReturned = 0;
+        let offlineTotalReceived = 0;
+        let offlineTotalReturned = 0;
 
         // Function to handle stand filter change
         function filterData(stand) {
@@ -242,10 +245,10 @@
                 const response = await fetch('/getAllData');
                 const data = await response.json();
 
-                let onlineTotalReceived = 0;
-                let onlineTotalReturned = 0;
-                let offlineTotalReceived = 0;
-                let offlineTotalReturned = 0;
+                onlineTotalReceived = 0;
+                onlineTotalReturned = 0;
+                offlineTotalReceived = 0;
+                offlineTotalReturned = 0;
 
                 const onlineTableBody = document.getElementById('onlineBillingTableBody');
                 const offlineTableBody = document.getElementById('offlineBillingTableBody');
@@ -258,70 +261,81 @@
                         return;  // Skip this item if it doesn't match the selected stand
                     }
 
-                    // Calculate Amount Received and Amount Returned
+                    // Amount Received & Amount Returned based on Final Payment Mode
                     let amountReceived = 0;
                     let amountReturned = 0;
-                    const securityAmount = item.securityAmount;
-                    const finalBill = item.finalBill;
+                    const securityAmount = item.securityAmount ?? 0;
+                    const finalBill = item.finalBill ?? 0;
 
-                    if (securityAmount > finalBill) {
-                        amountReturned = securityAmount - finalBill;
-                    } else {
-                        amountReceived = securityAmount + finalBill;
+                    // Calculating Amount Received and Amount Returned based on Final Payment Mode
+                    if (finalBill > 0) {
+                        amountReceived = finalBill;  // Amount received is based on final bill
+                        if (securityAmount > finalBill) {
+                            amountReturned = securityAmount - finalBill; // Security greater than final bill is returned
+                        }
                     }
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.tokenNo}</td>
-                        <td>${item.name}</td>
-                        <td>${item.mobile}</td>
-                        <td>${item.paymentMode}</td>
-                        <td>${item.finalPaymentMode}</td>
-                        <td>${finalBill}</td>
-                        <td>${amountReceived}</td>
-                        <td>${amountReturned}</td>
-                    `;
-
-                    // Append to correct table
+                    // **Security Amount Calculation based on Payment Mode**
                     if (item.paymentMode === 'Online') {
-                        onlineTableBody.appendChild(row);
+                        onlineSecurity += securityAmount;
+                    } else if (item.paymentMode === 'Offline') {
+                        offlineSecurity += securityAmount;
+                    }
+
+                    // Append data to tables
+                    if (item.finalPaymentMode === 'Online') {
+                        onlineTableBody.innerHTML += `
+                            <tr>
+                                <td>${item.tokenNo}</td>
+                                <td>${item.name}</td>
+                                <td>${item.mobile}</td>
+                                <td>${item.paymentMode}</td>
+                                <td>${item.finalPaymentMode}</td>
+                                <td>${finalBill}</td>
+                                <td>${amountReceived}</td>
+                                <td>${amountReturned}</td>
+                            </tr>`;
                         onlineTotalReceived += amountReceived;
                         onlineTotalReturned += amountReturned;
-                        onlineSecurity += item.securityAmount;
-                    } else if (item.paymentMode === 'Offline') {
-                        offlineTableBody.appendChild(row);
+                    } else if (item.finalPaymentMode === 'Offline') {
+                        offlineTableBody.innerHTML += `
+                            <tr>
+                                <td>${item.tokenNo}</td>
+                                <td>${item.name}</td>
+                                <td>${item.mobile}</td>
+                                <td>${item.paymentMode}</td>
+                                <td>${item.finalPaymentMode}</td>
+                                <td>${finalBill}</td>
+                                <td>${amountReceived}</td>
+                                <td>${amountReturned}</td>
+                            </tr>`;
                         offlineTotalReceived += amountReceived;
                         offlineTotalReturned += amountReturned;
-                        offlineSecurity += item.securityAmount;
                     }
                 });
 
-                // Update total row for online billing
-                document.getElementById('onlineTotalReceived').textContent = onlineTotalReceived.toFixed(2);
-                document.getElementById('onlineTotalReturned').textContent = onlineTotalReturned.toFixed(2);
+                // Update totals and net amount for Online and Offline
+                document.getElementById('onlineTotalReceived').innerText = onlineTotalReceived;
+                document.getElementById('onlineTotalReturned').innerText = onlineTotalReturned;
+                document.getElementById('offlineTotalReceived').innerText = offlineTotalReceived;
+                document.getElementById('offlineTotalReturned').innerText = offlineTotalReturned;
 
-                // Update total row for offline billing
-                document.getElementById('offlineTotalReceived').textContent = offlineTotalReceived.toFixed(2);
-                document.getElementById('offlineTotalReturned').textContent = offlineTotalReturned.toFixed(2);
+                // Update the security and net amounts
+                document.getElementById('securityOnline').innerText = onlineSecurity;
+                document.getElementById('securityOffline').innerText = offlineSecurity;
 
-                // Update Net Amount Section for Online
-                document.getElementById('securityOnline').textContent = onlineSecurity.toFixed(2);
-                document.getElementById('totalOnlineBilling').textContent = onlineTotalReturned.toFixed(2);
-                const netOnlineAmount = (onlineSecurity + onlineTotalReceived) - onlineTotalReturned;
-                document.getElementById('netOnlineAmount').textContent = netOnlineAmount.toFixed(2);
+                document.getElementById('totalOnlineBilling').innerText = onlineTotalReceived - onlineTotalReturned;
+                document.getElementById('totalOfflineBilling').innerText = offlineTotalReceived - offlineTotalReturned;
 
-                // Update Net Amount Section for Offline
-                document.getElementById('securityOffline').textContent = offlineSecurity.toFixed(2);
-                document.getElementById('totalOfflineBilling').textContent = offlineTotalReturned.toFixed(2);
-                const netOfflineAmount = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
-                document.getElementById('netOfflineAmount').textContent = netOfflineAmount.toFixed(2);
+                document.getElementById('netOnlineAmount').innerText = onlineSecurity + (onlineTotalReceived - onlineTotalReturned);
+                document.getElementById('netOfflineAmount').innerText = offlineSecurity + (offlineTotalReceived - offlineTotalReturned);
 
             } catch (error) {
-                console.error('Error fetching accounts data:', error);
+                console.error("Error fetching data:", error);
             }
         }
 
-        // Fetch the data on page load
+        // Initialize data fetch
         fetchAccountsData();
     </script>
 
