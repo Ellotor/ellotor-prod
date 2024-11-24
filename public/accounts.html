@@ -283,12 +283,12 @@
                     `;
 
                     // Append to correct table
-                    if (item.paymentMode === 'Online') {
+                    if (item.finalPaymentMode === 'Online') {
                         onlineTableBody.appendChild(row);
                         onlineTotalReceived += amountReceived;
                         onlineTotalReturned += amountReturned;
                         onlineSecurity += item.securityAmount;
-                    } else if (item.paymentMode === 'Offline') {
+                    } else if (item.finalPaymentMode === 'Offline') {
                         offlineTableBody.appendChild(row);
                         offlineTotalReceived += amountReceived;
                         offlineTotalReturned += amountReturned;
@@ -307,13 +307,13 @@
                 // Update Net Amount Section for Online
                 document.getElementById('securityOnline').textContent = onlineSecurity.toFixed(2);
                 document.getElementById('totalOnlineBilling').textContent = onlineTotalReceived.toFixed(2);
-                const netOnlineAmount = Math.max(onlineSecurity, onlineTotalReceived) - Math.min(onlineSecurity, onlineTotalReceived);
+                const netOnlineAmount = (onlineSecurity + onlineTotalReceived) - onlineTotalReturned;
                 document.getElementById('netOnlineAmount').textContent = netOnlineAmount.toFixed(2);
 
                 // Update Net Amount Section for Offline
                 document.getElementById('securityOffline').textContent = offlineSecurity.toFixed(2);
                 document.getElementById('totalOfflineBilling').textContent = offlineTotalReceived.toFixed(2);
-                const netOfflineAmount = Math.max(offlineSecurity, offlineTotalReceived) - Math.min(offlineSecurity, offlineTotalReceived);
+                const netOfflineAmount = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
                 document.getElementById('netOfflineAmount').textContent = netOfflineAmount.toFixed(2);
 
             } catch (error) {
