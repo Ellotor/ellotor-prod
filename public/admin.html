@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -29,110 +29,32 @@
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            margin: 20px;
         }
 
-        .back-btn {
+        .data-btn {
             background-color: #007bff;
             color: white;
-            margin-bottom: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            width: 150px;
         }
 
-        .back-btn:hover {
+        .data-btn:hover {
             background-color: #0056b3;
         }
 
-        .download-btn {
-            background-color: #007bff;
+        .accounts-btn {
+            background-color: #28a745;
             color: white;
-            padding: 12px 25px;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
         }
 
-        .download-btn:hover {
-            background-color: #0056b3;
+        .accounts-btn:hover {
+            background-color: #218838;
         }
 
-        .delete-btn {
-            background-color: #dc3545;
-            color: white;
-            padding: 12px 25px;
-            position: absolute;
-            top: 20px;
-            right: 200px;
-            cursor: pointer;
-            display: none;
-        }
-
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-
-        .table-container {
-            max-width: 1500px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 60px;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-            color: #555;
-            word-wrap: break-word;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        td {
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Responsive table: Adjusts for small screens */
+        /* Responsive design */
         @media (max-width: 768px) {
-            table {
-                font-size: 12px;
-            }
-
-            .download-btn,
-            .delete-btn {
-                position: relative;
-                top: unset;
-                right: unset;
-                margin: 10px 0;
-                display: block;
+            .btn {
                 width: 100%;
+                margin: 10px 0;
             }
         }
     </style>
@@ -142,137 +64,11 @@
 
     <h1>Admin Dashboard</h1>
 
-    <!-- Back Button -->
-    <button class="btn back-btn" onclick="goBack()">Back</button>
-
-    <!-- Download Button -->
-    <button class="btn download-btn" onclick="downloadTable()">Download Excel</button>
-
-    <!-- Delete Button -->
-    <button class="btn delete-btn" onclick="confirmDelete()">Delete All Users</button>
-
-    <!-- Billing Data Table -->
-    <div class="table-container">
-        <table id="billingTable">
-            <thead>
-                <tr>
-                    <th>Token No</th>
-                    <th>Stand</th>
-                    <th>Name</th>
-                    <th>Mobile</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Payment Mode</th>
-                    <th>Security Amount</th>
-                    <th>Ride(Single)</th>
-                    <th>Ride(Double)</th>
-                    <th>Ride(Ellotor)</th>
-                    <th>Ride(Kids)</th>
-                    <th>Ride(Babyride)</th>
-                    <th>Final Bill</th>
-                    <th>Final Payment Mode</th>
-                    <th>Penalty</th>
-                    <th>Comments</th>
-                </tr>
-            </thead>
-            <tbody id="billingTableBody">
-                <!-- Billing data rows will go here -->
-            </tbody>
-        </table>
+    <!-- Navigation Buttons -->
+    <div class="btn-container" style="text-align: center;">
+        <button class="btn data-btn" onclick="window.location.href='data.html'">Data</button>
+        <button class="btn accounts-btn" onclick="window.location.href='accounts.html'">Accounts</button>
     </div>
-
-    <script>
-        // Fetch billing data from the server
-        async function fetchBillingData() {
-            try {
-                const response = await fetch('/getAllData'); // Assuming you have an API endpoint to fetch data
-                const data = await response.json();
-                const tableBody = document.getElementById('billingTableBody');
-
-                tableBody.innerHTML = '';
-
-                // Populate table with filtered data (only records with a filled endTime)
-                data.filter(item => item.endTime).forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.tokenNo}</td>
-                        <td>${item.stand}</td>
-                        <td>${item.name}</td>
-                        <td>${item.mobile}</td>
-                        <td>${item.startTime}</td>
-                        <td>${item.endTime}</td>
-                        <td>${item.paymentMode}</td>
-                        <td>${item.securityAmount}</td>
-                        <td>${item.rideSelections.single}</td>
-                        <td>${item.rideSelections.double}</td>
-                        <td>${item.rideSelections.ellotor}</td>
-                        <td>${item.rideSelections.kids}</td>
-                        <td>${item.rideSelections.babyride}</td>
-                        <td>${item.finalBill}</td>
-                        <td>${item.finalPaymentMode}</td>
-                        <td>${item.penalty}</td>
-                        <td>${item.comments}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error fetching billing data:', error);
-            }
-        }
-
-        // Go back to the previous page
-        function goBack() {
-            window.history.back();
-        }
-
-        // Download table data as Excel
-        function downloadTable() {
-            const table = document.getElementById("billingTable");
-            const rows = table.querySelectorAll("tr");
-            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
-
-            // Create Excel file and trigger download
-            XLSX.writeFile(workbook, "billing_data.xlsx");
-
-            // Show the delete button after downloading
-            document.querySelector('.delete-btn').style.display = 'inline-block';
-        }
-
-        // Confirm before deleting all users
-        function confirmDelete() {
-            const confirmation = confirm("Are you sure you want to delete all existing data?");
-            if (confirmation) {
-                // Call API to delete all users
-                deleteAllUsers();
-            }
-        }
-
-        // Call the delete endpoint to remove all users
-        async function deleteAllUsers() {
-            try {
-                const response = await fetch('/deleteAllUsers', {
-                    method: 'DELETE',
-                });
-
-                const result = await response.json();
-                alert(result.message);
-
-                // After successful deletion, you can refresh the table or navigate back
-                if (response.ok) {
-                    location.reload(); // Reload the page to refresh the table
-                }
-            } catch (error) {
-                console.error('Error deleting users:', error);
-                alert('An error occurred while deleting users.');
-            }
-        }
-
-        // Call fetchBillingData when the page loads
-        fetchBillingData();
-    </script>
-
-    <!-- Include SheetJS library for Excel export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
 </body>
 
