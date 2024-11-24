@@ -197,11 +197,11 @@
     <div class="net-amount-section">
         <h3>Net Amount Online</h3>
         <div class="amount-field">
-            <span>Security (Online):</span>
+            <span>Security + Amount Received (Online):</span>
             <span id="securityOnline"></span>
         </div>
         <div class="amount-field">
-            <span>Total Online Billing:</span>
+            <span>Total Returned Amount:</span>
             <span id="totalOnlineBilling"></span>
         </div>
         <div class="amount-field">
@@ -213,11 +213,11 @@
     <div class="net-amount-section">
         <h3>Net Amount Offline</h3>
         <div class="amount-field">
-            <span>Security (Offline):</span>
+            <span>Security + Amount Received (Offline):</span>
             <span id="securityOffline"></span>
         </div>
         <div class="amount-field">
-            <span>Total Offline Billing:</span>
+            <span>Total Returned Amount:</span>
             <span id="totalOfflineBilling"></span>
         </div>
         <div class="amount-field">
@@ -331,11 +331,11 @@
                 document.getElementById('securityOnline').innerText = onlineSecurity;
                 document.getElementById('securityOffline').innerText = offlineSecurity;
 
-                document.getElementById('totalOnlineBilling').innerText = onlineTotalReceived - onlineTotalReturned;
-                document.getElementById('totalOfflineBilling').innerText = offlineTotalReceived - offlineTotalReturned;
+                document.getElementById('totalOnlineBilling').innerText = onlineTotalReturned;
+                document.getElementById('totalOfflineBilling').innerText = offlineTotalReturned;
 
-                document.getElementById('netOnlineAmount').innerText = onlineSecurity + (onlineTotalReceived - onlineTotalReturned);
-                document.getElementById('netOfflineAmount').innerText = offlineSecurity + (offlineTotalReceived - offlineTotalReturned);
+                document.getElementById('netOnlineAmount').innerText = (onlineSecurity + onlineTotalReceived) - onlineTotalReturned;
+                document.getElementById('netOfflineAmount').innerText = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
 
             } catch (error) {
                 console.error("Error fetching data:", error);
