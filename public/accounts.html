@@ -306,13 +306,13 @@
 
                 // Update Net Amount Section for Online
                 document.getElementById('securityOnline').textContent = onlineSecurity.toFixed(2);
-                document.getElementById('totalOnlineBilling').textContent = onlineTotalReceived.toFixed(2);
+                document.getElementById('totalOnlineBilling').textContent = onlineTotalReturned.toFixed(2);
                 const netOnlineAmount = (onlineSecurity + onlineTotalReceived) - onlineTotalReturned;
                 document.getElementById('netOnlineAmount').textContent = netOnlineAmount.toFixed(2);
 
                 // Update Net Amount Section for Offline
                 document.getElementById('securityOffline').textContent = offlineSecurity.toFixed(2);
-                document.getElementById('totalOfflineBilling').textContent = offlineTotalReceived.toFixed(2);
+                document.getElementById('totalOfflineBilling').textContent = offlineTotalReturned.toFixed(2);
                 const netOfflineAmount = (offlineSecurity + offlineTotalReceived) - offlineTotalReturned;
                 document.getElementById('netOfflineAmount').textContent = netOfflineAmount.toFixed(2);
 
