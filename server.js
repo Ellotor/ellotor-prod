@@ -295,7 +295,7 @@ app.delete('/deleteAllUsers', async (req, res) => {
 // Function to keep the app alive
 const keepAppAlive = () => {
   setInterval(() => {
-    axios.get(`https://ellotor-prod.onrender.com/`)
+    axios.get(`https://ellotor-prod-1.onrender.com/`)
       .then(response => {
         console.log('Ping successful:', response.status);
       })
