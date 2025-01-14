@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT; // Allow port to be set by environment variable
 // CORS configuration
 const corsOptions = {
-  origin: 'https://ellotor-prod-2.onrender.com', // Allow only this frontend domain
+  origin: 'https://ellotor-cycle.onrender.com', // Allow only this frontend domain
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
   credentials: true,  // Allow credentials (cookies, etc.)
@@ -295,7 +295,7 @@ app.delete('/deleteAllUsers', async (req, res) => {
 // Function to keep the app alive
 const keepAppAlive = () => {
   setInterval(() => {
-    axios.get(`https://ellotor-prod-2.onrender.com/`)
+    axios.get(`https://ellotor-cycle.onrender.com/`)
       .then(response => {
         console.log('Ping successful:', response.status);
       })
