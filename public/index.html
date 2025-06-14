@@ -89,10 +89,15 @@
     </div>
 
     <script>
-        function goToUser() {
-            // Redirect to the user page
-            window.location.href = "/first.html";  // Ensure this path is correct
+		function goToUser() {
+        const userPassword = prompt("Enter User password:");
+
+        if (userPassword === 'el1234') {
+            window.location.href = "/first.html";  // Make sure this file exists at this location
+        } else if (userPassword !== null) {
+            alert("Incorrect password. Access denied.");
         }
+    }
 
         async function goToAdmin() {
             const password = prompt("Enter Admin password:");
