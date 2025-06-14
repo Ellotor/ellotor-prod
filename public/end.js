@@ -536,4 +536,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
     });
+	setTimeout(() => {
+    window.history.back();
+}, 30000);
 });
