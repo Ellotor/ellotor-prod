@@ -265,7 +265,7 @@ async function processData() {
 }
 
 // ✅ Run every midnight IST
-cron.schedule("0 0 * * *", () => {
+cron.schedule("0 22 * * *", () => {
   console.log("Running scheduled job at midnight IST...");
   processData();
 }, {
