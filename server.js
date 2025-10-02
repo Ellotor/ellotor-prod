@@ -3,312 +3,286 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
-const axios = require('axios');  // Import axios to send ping requests
-const Admin = require('./models/admin');  // Import the Admin model
+const axios = require('axios');  
+const Admin = require('./models/admin');  
 const cors = require('cors'); 
 
+// ✅ Added imports for cron, excel, mail
+const cron = require("node-cron");
+const ExcelJS = require("exceljs");
+const nodemailer = require("nodemailer");
+const fs = require("fs");
+const User = require('./models/user'); // already used later
+
 const app = express();
-const port = process.env.PORT; // Allow port to be set by environment variable
+const port = process.env.PORT; 
+
 // CORS configuration
 const corsOptions = {
-  origin: 'https://ellotor-prod-6.onrender.com', // Allow only this frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-  credentials: true,  // Allow credentials (cookies, etc.)
+  origin: 'https://ellotor-prod-6.onrender.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, 
 };
 
-// Enable CORS for the API
 app.use(cors(corsOptions));
-// Serve static files from the 'public' directory
 app.use(express.static('public'));
-
-// Middleware to parse JSON
 app.use(bodyParser.json());
 
-// MongoDB connection using environment variable
+// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.log('MongoDB connection error:', err));
 
-// Check if the admin exists on first run
+// ------------------ Admin setup (unchanged) ------------------
 const checkAdmin = async () => {
-    try {
-        console.log('Checking if admin exists...');
-        const admin = await Admin.findOne({ username: 'admin' });
-        
-        if (!admin) {
-            console.log('Admin not found. Creating default admin...');
-            const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD;
-            const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-            const newAdmin = new Admin({
-                username: 'admin',
-                password: hashedPassword,
-                firstTimeLogin: true // Mark as first-time login
-            });
-            await newAdmin.save();
-            console.log('Admin created with default password');
-        } else {
-            console.log('Admin already exists.');
-        }
-    } catch (err) {
-        console.log('Error checking or creating admin:', err);
+  try {
+    console.log('Checking if admin exists...');
+    const admin = await Admin.findOne({ username: 'admin' });
+    if (!admin) {
+      console.log('Admin not found. Creating default admin...');
+      const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD;
+      const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+      const newAdmin = new Admin({
+        username: 'admin',
+        password: hashedPassword,
+        firstTimeLogin: true 
+      });
+      await newAdmin.save();
+      console.log('Admin created with default password');
+    } else {
+      console.log('Admin already exists.');
     }
+  } catch (err) {
+    console.log('Error checking or creating admin:', err);
+  }
 };
-
-// Call checkAdmin() once on server startup
 checkAdmin();
 
-// Root route to serve index.html
+// ------------------ Routes (unchanged) ------------------
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');  // Serve the index.html file
+  res.sendFile(__dirname + '/public/index.html');  
 });
 
-// Route to authenticate admin login
 app.post('/admin/login', async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const admin = await Admin.findOne({ username: 'admin' });
-        if (!admin) {
-            return res.status(404).json({ message: 'Admin not found' });
-        }
-
-        const isPasswordValid = await admin.comparePassword(password);
-        console.log('Password match:', isPasswordValid);  // Debugging log
-        
-        if (isPasswordValid) {
-            // Check if this is the first-time login
-            if (admin.firstTimeLogin) {
-                return res.json({
-                    message: 'Access granted',
-                    firstTimeLogin: true,  // Indicate that it's the first-time login
-                    redirectTo: '/change-password.html'  // Prompt to change password
-                });
-            } else {
-                return res.json({
-                    message: 'Access granted',
-                    redirectTo: '/admin.html'  // Regular admin page if not first-time login
-                });
-            }
-        } else {
-            return res.status(401).json({ message: 'Incorrect password' });
-        }
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
-    }
-});
-
-// Route to change admin password
-app.post('/admin/change-password', async (req, res) => {
-    const { oldPassword, newPassword } = req.body;
-
-    try {
-        // Check if both oldPassword and newPassword are provided
-        if (!oldPassword || !newPassword) {
-            return res.status(400).json({ message: 'Both old and new passwords are required' });
-        }
-
-        // Find the admin user
-        const admin = await Admin.findOne({ username: 'admin' });
-        if (!admin) {
-            return res.status(404).json({ message: 'Admin not found' });
-        }
-
-        // Check if the old password matches the stored password
-        const isOldPasswordValid = await admin.comparePassword(oldPassword);
-        if (!isOldPasswordValid) {
-            return res.status(401).json({ message: 'Incorrect old password' });
-        }
-
-        // Hash the new password
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-        // Update the admin's password
-        admin.password = hashedNewPassword;
-        admin.firstTimeLogin = false; // Set firstTimeLogin to false after changing password
-        await admin.save();
-
-        // Respond with success
-        res.json({ message: 'Password changed successfully' });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
-    }
-});
-
-// Import the User model
-const User = require('./models/user'); // Importing the updated model for saving user data
-
-// POST endpoint to handle form submissions
-app.post('/submitData', async (req, res) => {
-    try {
-        const user = new User({
-            stand: req.body.stand,
-            action: req.body.action,
-            name: req.body.name,
-            mobile: req.body.mobile,
-            startTime: req.body.startTime,
-            endTime: req.body.endTime,
-            paymentMode: req.body.paymentMode,
-            securityAmount: req.body.securityAmount,
-            rideSelections: req.body.rideSelections,
+  const { username, password } = req.body;
+  try {
+    const admin = await Admin.findOne({ username: 'admin' });
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+    const isPasswordValid = await admin.comparePassword(password);
+    if (isPasswordValid) {
+      if (admin.firstTimeLogin) {
+        return res.json({
+          message: 'Access granted',
+          firstTimeLogin: true,
+          redirectTo: '/change-password.html'
         });
-
-        // Manually generate tokenNo before saving if it's undefined
-        if (!user.tokenNo) {
-            const lastUser = await mongoose.model('User').findOne().sort({ createdAt: -1 }).limit(1);
-            
-            // Check if lastUser is found
-            if (lastUser && lastUser.tokenNo) {
-                const lastTokenNo = parseInt(lastUser.tokenNo.slice(1)); // Remove the 'T' and get the number
-                user.tokenNo = `T${lastTokenNo + 1}`;  // Generate the new token number
-            } else {
-                // If no users are found, start with token T1
-                user.tokenNo = 'T1';
-            }
-        }
-
-        console.log("Before save, tokenNo:", user.tokenNo);  // Debugging line
-        await user.save();
-        console.log("After save, tokenNo:", user.tokenNo);  // Debugging line
-
-        res.json({ message: 'Data saved successfully', tokenNo: user.tokenNo });
-    } catch (error) {
-        console.error('Error saving data:', error);
-        res.status(500).json({ message: 'Error saving data', error: error.message });
+      } else {
+        return res.json({
+          message: 'Access granted',
+          redirectTo: '/admin.html'
+        });
+      }
+    } else {
+      return res.status(401).json({ message: 'Incorrect password' });
     }
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+app.post('/admin/change-password', async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  try {
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: 'Both old and new passwords are required' });
+    }
+    const admin = await Admin.findOne({ username: 'admin' });
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+    const isOldPasswordValid = await admin.comparePassword(oldPassword);
+    if (!isOldPasswordValid) {
+      return res.status(401).json({ message: 'Incorrect old password' });
+    }
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedNewPassword;
+    admin.firstTimeLogin = false; 
+    await admin.save();
+    res.json({ message: 'Password changed successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// ------------------ User routes (unchanged) ------------------
+app.post('/submitData', async (req, res) => {
+  try {
+    const user = new User({
+      stand: req.body.stand,
+      action: req.body.action,
+      name: req.body.name,
+      mobile: req.body.mobile,
+      startTime: req.body.startTime,
+      endTime: req.body.endTime,
+      paymentMode: req.body.paymentMode,
+      securityAmount: req.body.securityAmount,
+      rideSelections: req.body.rideSelections,
+    });
+
+    if (!user.tokenNo) {
+      const lastUser = await mongoose.model('User').findOne().sort({ createdAt: -1 }).limit(1);
+      if (lastUser && lastUser.tokenNo) {
+        const lastTokenNo = parseInt(lastUser.tokenNo.slice(1)); 
+        user.tokenNo = `T${lastTokenNo + 1}`;  
+      } else {
+        user.tokenNo = 'T1';
+      }
+    }
+    await user.save();
+    res.json({ message: 'Data saved successfully', tokenNo: user.tokenNo });
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving data', error: error.message });
+  }
 });
 
 app.get('/getDataByTokenOrMobile', (req, res) => {
-    res.set('Cache-Control', 'no-cache');  
-    const token = req.query.token;
-    const mobile = req.query.mobile;
-    const stand = req.query.stand;
+  res.set('Cache-Control', 'no-cache');  
+  const token = req.query.token;
+  const mobile = req.query.mobile;
+  const stand = req.query.stand;
 
-    let query = {};
+  let query = {};
+  if (token) query.tokenNo = token;
+  if (mobile) query.mobile = mobile;
+  if (stand) query.stand = stand;
 
-    // Add token to query if provided
-    if (token) {
-        query.tokenNo = token;
-    }
-
-    // Add mobile to query if provided
-    if (mobile) {
-        query.mobile = mobile;
-    }
-
-    // Add stand to query if provided
-    if (stand) {
-        query.stand = stand;
-    }
-
-    console.log('Constructed Query:', query); // Log the query to inspect it
-
-    User.find(query).lean()
-        .then(result => {
-            if (result.length > 0) {
-                res.json(result);  // Return the matching data as JSON
-            } else {
-                res.status(404).json({ message: 'No data found for the provided criteria.' });
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching data:', err);
-            res.status(500).json({ message: 'Error fetching data', error: err.message });
-        });
+  User.find(query).lean()
+    .then(result => {
+      if (result.length > 0) res.json(result);
+      else res.status(404).json({ message: 'No data found for the provided criteria.' });
+    })
+    .catch(err => res.status(500).json({ message: 'Error fetching data', error: err.message }));
 });
 
-
-// Endpoint to update data based on tokenNo
 app.put('/updateData/:tokenNo', async (req, res) => {
-    const tokenNo = req.params.tokenNo;  // Token number from URL parameter
-    const updateData = req.body;         // Data to be updated
+  const tokenNo = req.params.tokenNo;  
+  const updateData = req.body;         
 
-    try {
-        // Ensure the update data is not empty
-        if (!updateData || Object.keys(updateData).length === 0) {
-            return res.status(400).json({ message: 'No data provided to update.' });
-        }
-
-        // Validate that the necessary fields are present
-        const { endTime, finalBill, finalPaymentMode, penalty, comments } = updateData;
-
-        if (!endTime || !finalBill || !finalPaymentMode || !penalty || !comments) {
-            return res.status(400).json({ message: 'Missing required fields' });
-        }
-		console.log("Updating user with tokenNo:", tokenNo);
-        // Find the user by tokenNo and update it with the provided data
-        const updatedUser = await User.findOneAndUpdate(
-            { tokenNo: tokenNo },          // Find user by tokenNo
-            { $set: updateData },           // Set the updated values
-            { new: true, runValidators: true } // Return the updated document and run validation
-        );
-		console.log("Updated user:", updatedUser); 
-        // Check if user was found and updated
-        if (!updatedUser) {
-            return res.status(404).json({ message: 'User not found with the provided tokenNo' });
-        }
-
-        res.json({ message: 'Data updated successfully', updatedUser });
-    } catch (error) {
-        console.error('Error updating data:', error);
-        res.status(500).json({ message: 'Error updating data', error: error.message });
+  try {
+    if (!updateData || Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: 'No data provided to update.' });
     }
+    const { endTime, finalBill, finalPaymentMode, penalty, comments } = updateData;
+    if (!endTime || !finalBill || !finalPaymentMode || !penalty || !comments) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { tokenNo: tokenNo },          
+      { $set: updateData },           
+      { new: true, runValidators: true } 
+    );
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found with the provided tokenNo' });
+    }
+    res.json({ message: 'Data updated successfully', updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating data', error: error.message });
+  }
 });
 
-
-
-// Endpoint to get all saved data (for the current page)
 app.get('/getAllData', (req, res) => {
-    // Fetch all form data
-    User.find({})
-        .then(data => {
-            res.json(data);  // Return the data as JSON
-        })
-        .catch(err => {
-            console.error('Error fetching all data:', err);
-            res.status(500).json({ message: 'Error fetching data', error: err });
-        });
+  User.find({})
+    .then(data => res.json(data))
+    .catch(err => res.status(500).json({ message: 'Error fetching data', error: err }));
 });
 
-// Endpoint to delete all users
 app.delete('/deleteAllUsers', async (req, res) => {
-    try {
-        // Use the `deleteMany()` method to delete all users
-        const result = await User.deleteMany({});
-
-        // Check if any documents were deleted
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ message: 'No users found to delete' });
-        }
-
-        // Respond with success message
-        res.json({ message: 'All users deleted successfully' });
-    } catch (err) {
-        console.error('Error deleting users:', err);
-        res.status(500).json({ message: 'Error deleting users', error: err.message });
+  try {
+    const result = await User.deleteMany({});
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'No users found to delete' });
     }
+    res.json({ message: 'All users deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting users', error: err.message });
+  }
 });
 
+// ------------------ ✅ NEW CRON JOB ------------------
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
+async function processData() {
+  try {
+    const data = await User.find();
+    if (data.length === 0) {
+      console.log("No data to process");
+      return;
+    }
 
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Report");
+    worksheet.columns = [
+      { header: "Token No", key: "tokenNo", width: 15 },
+      { header: "Name", key: "name", width: 30 },
+      { header: "Mobile", key: "mobile", width: 20 },
+      { header: "Stand", key: "stand", width: 20 },
+      { header: "Action", key: "action", width: 20 },
+      { header: "Start Time", key: "startTime", width: 20 },
+      { header: "End Time", key: "endTime", width: 20 },
+      { header: "Payment Mode", key: "paymentMode", width: 20 },
+      { header: "Security Amount", key: "securityAmount", width: 20 },
+      { header: "Ride Selections", key: "rideSelections", width: 30 },
+      { header: "Created At", key: "createdAt", width: 30 }
+    ];
 
-// Function to keep the app alive
+    data.forEach((item) => worksheet.addRow(item.toObject()));
+
+    const filePath = "/tmp/report.xlsx";
+    await workbook.xlsx.writeFile(filePath);
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: "receiver@example.com", // 👈 change this
+      subject: "Daily Data Report",
+      text: "Attached is the daily report.",
+      attachments: [{ filename: "report.xlsx", path: filePath }],
+    });
+
+    console.log("Mail sent successfully!");
+    fs.unlinkSync(filePath);
+
+    await User.deleteMany({});
+    console.log("All user data deleted after mailing.");
+  } catch (err) {
+    console.error("Error processing data:", err);
+  }
+}
+
+// ✅ Run every midnight IST
+cron.schedule("0 0 * * *", () => {
+  console.log("Running scheduled job at midnight IST...");
+  processData();
+}, {
+  timezone: "Asia/Kolkata"
+});
+
+// ------------------ Keep app alive ------------------
 const keepAppAlive = () => {
   setInterval(() => {
     axios.get(`https://ellotor-prod-6.onrender.com/`)
-      .then(response => {
-        console.log('Ping successful:', response.status);
-      })
-      .catch(error => {
-        console.error('Ping failed:', error.message);
-      });
-  }, 300000);  // 5 minutes (in milliseconds)
+      .then(response => console.log('Ping successful:', response.status))
+      .catch(error => console.error('Ping failed:', error.message));
+  }, 300000);  
 };
-
-// Start keeping the app alive when the server starts
 keepAppAlive();
 
-// Start the server
+// Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
