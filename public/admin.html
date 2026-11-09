@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,8 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -50,6 +53,16 @@
             background-color: #218838;
         }
 
+        /* Rides Data Button */
+        .rides-btn {
+            background-color: #6f42c1;
+            color: white;
+        }
+
+        .rides-btn:hover {
+            background-color: #59339d;
+        }
+
         /* Back Button Styling */
         .back-btn {
             background-color: #6c757d;
@@ -69,7 +82,7 @@
             background-color: #5a6268;
         }
 
-        /* Responsive design */
+        /* Responsive Design */
         @media (max-width: 768px) {
             .btn {
                 width: 100%;
@@ -92,10 +105,20 @@
 
     <!-- Navigation Buttons -->
     <div class="btn-container" style="text-align: center;">
-        <button class="btn data-btn" onclick="window.location.href='data.html'">Data</button>
-        <button class="btn accounts-btn" onclick="window.location.href='accounts.html'">Accounts</button>
+
+        <button class="btn data-btn" onclick="window.location.href='data.html'">
+            <i class="fas fa-database"></i> Data
+        </button>
+
+        <button class="btn accounts-btn" onclick="window.location.href='accounts.html'">
+            <i class="fas fa-users"></i> Accounts
+        </button>
+
+        <button class="btn rides-btn" onclick="window.location.href='rides-data.html'">
+            <i class="fas fa-train"></i> Rides Data
+        </button>
+
     </div>
 
 </body>
-
 </html>
