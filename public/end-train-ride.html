@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>End Ride</title>
+
+<style>
+    body {
+        font-family: Arial;
+        background: #f4f4f4;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+    }
+
+    .card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+    }
+
+    .end-btn {
+        background: #dc3545;
+        color: white;
+        width: 100%;
+        padding: 15px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .end-btn:disabled {
+        background: #999;
+        cursor: not-allowed;
+    }
+
+    p {
+        margin: 8px 0;
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <button onclick="history.back()">⬅ Back</button>
+
+    <h1>End Current Ride</h1>
+
+    <div id="ride-info"></div>
+
+    <button
+        id="end-btn"
+        class="end-btn"
+        onclick="endRide()">
+        End Ride & Create Next
+    </button>
+
+</div>
+
+<script>
+
+async function loadRide() {
+
+    try {
+
+        const res = await fetch('/train/currentRide');
+
+        if (!res.ok) {
+            throw new Error('Unable to load ride');
+        }
+
+        const ride = await res.json();
+
+        document.getElementById('ride-info').innerHTML = `
+            <div class="card">
+
+                <p>
+                    <strong>Ride Number:</strong>
+                    ${ride.rideNo}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${ride.status}
+                </p>
+
+                <p>
+                    <strong>Total Seats Booked:</strong>
+                    ${ride.bookedSeats || 0}
+                </p>
+
+                <p>
+                    <strong>Start Time:</strong>
+                    ${
+                        ride.startTime
+                        ? new Date(ride.startTime).toLocaleString()
+                        : 'Not Started Yet'
+                    }
+                </p>
+
+                <p>
+                    <strong>End Time:</strong>
+                    ${
+                        ride.endTime
+                        ? new Date(ride.endTime).toLocaleString()
+                        : 'Not Ended Yet'
+                    }
+                </p>
+
+            </div>
+        `;
+
+        const endBtn = document.getElementById('end-btn');
+
+        if (ride.status === 'Started') {
+
+            endBtn.disabled = false;
+            endBtn.innerText = 'End Ride & Create Next';
+
+        } else {
+
+            endBtn.disabled = true;
+
+            endBtn.innerText =
+                `Ride ${ride.rideNo} has not been started yet`;
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        document.getElementById('ride-info').innerHTML =
+            '<p style="color:red;">Unable to load ride.</p>';
+    }
+}
+
+async function endRide() {
+
+    try {
+
+        const confirmEnd = confirm(
+            'Are you sure you want to end this ride?'
+        );
+
+        if (!confirmEnd) return;
+
+        const res = await fetch('/train/endRide', {
+            method: 'PUT'
+        });
+
+        const data = await res.json();
+
+        alert(data.message);
+
+        if (data.success) {
+
+            // Load newly created ride automatically
+            loadRide();
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert('Failed to end ride.');
+    }
+}
+
+loadRide();
+
+/* Auto refresh every 5 seconds */
+setInterval(loadRide, 5000);
+
+</script>
+
+</body>
+</html>
