@@ -17,6 +17,7 @@ const corsOptions = {
   credentials: true,  // Allow credentials (cookies, etc.)
 };
 
+
 // Enable CORS for the API
 app.use(cors(corsOptions));
 // Serve static files from the 'public' directory
@@ -137,6 +138,7 @@ app.post('/admin/change-password', async (req, res) => {
 
 // Import the User model
 const User = require('./models/user'); // Importing the updated model for saving user data
+const TrainRide = require('./models/trainRide');
 
 // POST endpoint to handle form submissions
 app.post('/submitData', async (req, res) => {
@@ -289,8 +291,346 @@ app.delete('/deleteAllUsers', async (req, res) => {
     }
 });
 
+// Train Ride Routes
+app.get('/train/current', async (req, res) => { /* latest */ });
+app.get('/train/history', async (req, res) => { /* latest */ });
+app.get('/train/search', async (req, res) => { /* latest */ });
+app.get('/train/booked', async (req, res) => { /* latest */ });
+app.put('/train/startRide', async (req, res) => {
+    try {
+
+        const ride = await TrainRide.findOne({ status: 'Open' });
+
+        if (!ride) {
+            return res.status(404).json({
+                success: false,
+                message: 'No open ride found'
+            });
+        }
+
+        // Prevent ride start with zero bookings
+        if (!ride.bookedSeats || ride.bookedSeats === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot start ride. No seats have been booked yet.'
+            });
+        }
+
+        ride.status = 'Started';
+        ride.startTime = new Date();
+
+        await ride.save();
+
+        res.json({
+            success: true,
+            message: `Ride ${ride.rideNo} started successfully`,
+            startTime: ride.startTime
+        });
+
+    } catch (error) {
+
+        console.error('START RIDE ERROR:', error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+app.get('/train/currentRide', async (req, res) => {
+    try {
+
+		let ride = await TrainRide.findOne({
+			status: 'Started'
+		});
+		
+		if (!ride) {
+		
+			ride = await TrainRide.findOne({
+				status: 'Open'
+			}).sort({ rideNo: 1 });
+		}
+
+        if (!ride) {
+
+            ride = await TrainRide.create({
+                rideNo: 1,
+                bookedSeats: 0,
+                passengers: [],
+                status: 'Open'
+            });
+        }
+
+        res.json(ride);
+
+    } catch (err) {
+
+        console.error('CURRENT RIDE ERROR:', err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+});
+
+app.get('/train/nextRide', async (req, res) => {
+    try {
+        // Find the current active ride
+        let currentRide = await TrainRide.findOne({
+            status: 'Started'
+        });
+
+        if (!currentRide) {
+            currentRide = await TrainRide.findOne({
+                status: 'Open'
+            }).sort({ rideNo: 1 });
+        }
+
+        if (!currentRide) {
+            currentRide = await TrainRide.create({
+                rideNo: 1,
+                bookedSeats: 0,
+                passengers: [],
+                status: 'Open'
+            });
+        }
+
+        // Find the next ride
+        let nextRide = await TrainRide.findOne({
+            rideNo: currentRide.rideNo + 1
+        });
+
+        // If it doesn't exist, return its expected initial details
+        if (!nextRide) {
+            return res.json({
+                _id: null,
+                rideNo: currentRide.rideNo + 1,
+                status: 'Open',
+                bookedSeats: 0
+            });
+        }
+
+        res.json(nextRide);
+
+    } catch (err) {
+        console.error('NEXT RIDE ERROR:', err);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+});
+
+app.post('/train/bookPassenger', async (req, res) => {
+    try {
+
+        const {
+            rideId,
+            passengerName,
+            mobile,
+            tickets,
+            rideType
+        } = req.body;
+
+        if (!passengerName || !mobile || !tickets) {
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+
+        const ticketCount = Number(tickets);
+        const amount = ticketCount * 100;
+
+        // CURRENT OPEN/STARTED RIDE
+		let currentRide = await TrainRide.findOne({
+			status: 'Started'
+		});
+		
+		if (!currentRide) {
+		
+			currentRide = await TrainRide.findOne({
+				status: 'Open'
+			}).sort({ rideNo: 1 });
+		}
+
+        if (!currentRide) {
+            return res.status(404).json({
+                success: false,
+                message: 'No active ride found'
+            });
+        }
+
+        // NEXT RIDE BOOKING
+        if (rideType === 'next') {
+
+            let nextRide = await TrainRide.findOne({
+                rideNo: currentRide.rideNo + 1
+            });
+
+            if (!nextRide) {
+
+                nextRide = await TrainRide.create({
+                    rideNo: currentRide.rideNo + 1,
+                    bookedSeats: 0,
+                    passengers: [],
+                    status: 'Open',
+                    startTime: null,
+                    endTime: null
+                });
+            }
+
+            nextRide.passengers.push({
+                passengerName,
+                mobile,
+                tickets: ticketCount,
+                amount
+            });
+
+            nextRide.bookedSeats += ticketCount;
+
+            await nextRide.save();
+
+            return res.json({
+                success: true,
+                rideNo: nextRide.rideNo,
+                totalBookedSeats: nextRide.bookedSeats,
+                message: `${ticketCount} seat(s) booked for Ride ${nextRide.rideNo}`
+            });
+        }
+
+        // CURRENT RIDE BOOKING
+        currentRide.passengers.push({
+            passengerName,
+            mobile,
+            tickets: ticketCount,
+            amount
+        });
+
+        currentRide.bookedSeats += ticketCount;
+
+        await currentRide.save();
+
+        return res.json({
+            success: true,
+            rideNo: currentRide.rideNo,
+            totalBookedSeats: currentRide.bookedSeats,
+            message: `${ticketCount} seat(s) booked successfully`
+        });
+
+    } catch (error) {
+
+        console.error('BOOK PASSENGER ERROR:', error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+app.put('/train/endRide', async (req, res) => {
+    try {
+
+        const currentRide = await TrainRide.findOne({
+            status: 'Started'
+        });
+
+        if (!currentRide) {
+            return res.status(404).json({
+                success: false,
+                message: 'No started ride found'
+            });
+        }
+
+        currentRide.status = 'Completed';
+        currentRide.endTime = new Date();
+
+        await currentRide.save();
+
+        let nextRide = await TrainRide.findOne({
+            rideNo: currentRide.rideNo + 1
+        });
+
+        if (!nextRide) {
+
+            nextRide = await TrainRide.create({
+                rideNo: currentRide.rideNo + 1,
+                bookedSeats: 0,
+                passengers: [],
+                status: 'Open',
+                startTime: null,
+                endTime: null
+            });
+        } else {
+
+            nextRide.status = 'Open';
+            await nextRide.save();
+        }
+
+        res.json({
+            success: true,
+            message: `Ride ${currentRide.rideNo} ended successfully. Ride ${nextRide.rideNo} is now available.`
+        });
+
+    } catch (error) {
+
+        console.error('END RIDE ERROR:', error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// Get all rides for Admin page
+app.get('/train/allRides', async (req, res) => {
+    try {
+        const rides = await TrainRide.find({})
+            .sort({ rideNo: 1 })
+            .lean();
+
+        res.json(rides);
+
+    } catch (error) {
+        console.error('ERROR FETCHING ALL RIDES:', error);
+
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
 
 
+// Delete all ride records
+app.delete('/train/deleteAllRides', async (req, res) => {
+    try {
+        const result = await TrainRide.deleteMany({});
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({
+                message: 'No ride records found to delete'
+            });
+        }
+
+        res.json({
+            message: 'All ride records deleted successfully',
+            deletedCount: result.deletedCount
+        });
+
+    } catch (error) {
+        console.error('ERROR DELETING RIDES:', error);
+
+        res.status(500).json({
+            message: 'Error deleting rides',
+            error: error.message
+        });
+    }
+});
 
 // Function to keep the app alive
 const keepAppAlive = () => {
