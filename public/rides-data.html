@@ -1,0 +1,482 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rides Data - Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .back-btn {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .top-actions {
+            max-width: 1500px;
+            margin: 25px auto 15px;
+            padding: 0 15px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: none;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .table-container {
+            max-width: 1500px;
+            margin: 20px auto;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th, td {
+            padding: 13px 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .no-data {
+            padding: 30px;
+            text-align: center;
+            color: #777;
+        }
+
+        /* Total Revenue Summary - At the End */
+        .revenue-summary {
+            max-width: 1500px;
+            margin: 30px auto 50px;
+            padding: 22px 25px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #28a745;
+        }
+
+        .revenue-summary h2 {
+            margin: 0 0 8px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .revenue-amount {
+            font-size: 30px;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        @media(max-width: 700px) {
+            .header h2 {
+                font-size: 17px;
+            }
+
+            .top-actions {
+                flex-wrap: wrap;
+            }
+
+            .table-container {
+                margin: 15px 10px;
+            }
+
+            .revenue-summary {
+                margin: 20px 10px 35px;
+                padding: 18px;
+            }
+
+            .revenue-amount {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h2><i class="fas fa-train"></i> Rides Data</h2>
+
+        <button class="back-btn" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <div class="top-actions">
+
+        <button class="download-btn" onclick="downloadExcel()">
+            <i class="fas fa-file-excel"></i> Download Excel
+        </button>
+
+        <button class="delete-btn" id="deleteBtn" onclick="deleteAllRides()">
+            <i class="fas fa-trash"></i> Delete All Rides
+        </button>
+
+    </div>
+
+    <div class="table-container">
+        <table id="ridesTable">
+
+            <thead>
+                <tr>
+                    <th>Ride No.</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Total Time</th>
+                    <th>Total Seats Booked</th>
+                    <th>Total Amount Collected</th>
+                </tr>
+            </thead>
+
+            <tbody id="ridesTableBody">
+                <tr>
+                    <td colspan="6">Loading rides data...</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    <!-- Total Revenue Summary at the End of the Page -->
+    <div class="revenue-summary">
+
+        <h2>
+            <i class="fas fa-chart-line"></i>
+            Total Revenue Collected
+        </h2>
+
+        <div class="revenue-amount" id="totalRevenue">
+            ₹ 0
+        </div>
+
+    </div>
+
+    <script>
+
+        let ridesData = [];
+
+        // Format Date
+        function formatDate(dateValue) {
+            if (!dateValue) {
+                return '-';
+            }
+
+            const date = new Date(dateValue);
+
+            if (isNaN(date.getTime())) {
+                return '-';
+            }
+
+            return date.toLocaleString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Calculate Ride Duration
+        function calculateDuration(startTime, endTime) {
+            if (!startTime) {
+                return '-';
+            }
+
+            const start = new Date(startTime);
+            const end = endTime ? new Date(endTime) : new Date();
+
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                return '-';
+            }
+
+            const difference = Math.max(0, end - start);
+
+            const totalMinutes = Math.floor(difference / 60000);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            let duration = '';
+
+            if (hours > 0) {
+                duration += hours + ' hr ';
+            }
+
+            duration += minutes + ' min';
+
+            if (!endTime) {
+                duration += ' (Ongoing)';
+            }
+
+            return duration;
+        }
+
+        // Calculate Total Amount Per Ride
+        function calculateTotalAmount(passengers) {
+            if (!Array.isArray(passengers)) {
+                return 0;
+            }
+
+            return passengers.reduce((total, passenger) => {
+                return total + (Number(passenger.amount) || 0);
+            }, 0);
+        }
+
+        // Create Table Cell
+        function createCell(row, value) {
+            const cell = document.createElement('td');
+            cell.textContent = value;
+            row.appendChild(cell);
+        }
+
+        // Fetch All Rides
+        async function fetchRideData() {
+
+            const tbody = document.getElementById('ridesTableBody');
+
+            try {
+
+                const response = await fetch('/train/allRides', {
+                    cache: 'no-store'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Unable to fetch rides data');
+                }
+
+                const rides = await response.json();
+
+                ridesData = Array.isArray(rides) ? rides : [];
+
+                // Calculate Total Revenue
+                const totalRevenue = ridesData.reduce((total, ride) => {
+                    return total + calculateTotalAmount(ride.passengers);
+                }, 0);
+
+                document.getElementById('totalRevenue').textContent =
+                    '₹ ' + totalRevenue.toLocaleString('en-IN');
+
+                tbody.innerHTML = '';
+
+                if (ridesData.length === 0) {
+
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="no-data">
+                                No rides data available.
+                            </td>
+                        </tr>
+                    `;
+
+                    // Keep Delete button hidden if no rides exist
+                    document.getElementById('deleteBtn').style.display = 'none';
+
+                    return;
+                }
+
+                // Sort Rides by Ride Number
+                ridesData.sort((a, b) => {
+                    return Number(a.rideNo) - Number(b.rideNo);
+                });
+
+                // Display Rides
+                ridesData.forEach(ride => {
+
+                    const row = document.createElement('tr');
+
+                    const totalAmount = calculateTotalAmount(ride.passengers);
+
+                    createCell(row, ride.rideNo ?? '-');
+                    createCell(row, formatDate(ride.startTime));
+                    createCell(row, formatDate(ride.endTime));
+                    createCell(row, calculateDuration(ride.startTime, ride.endTime));
+                    createCell(row, ride.bookedSeats ?? 0);
+                    createCell(row, '₹ ' + totalAmount.toLocaleString('en-IN'));
+
+                    tbody.appendChild(row);
+
+                });
+
+                // Do not show Delete button here.
+                // It will appear only after Excel download.
+
+            } catch (error) {
+
+                console.error('Error fetching rides:', error);
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="no-data">
+                            Error loading rides data. Please try again.
+                        </td>
+                    </tr>
+                `;
+
+            }
+        }
+
+        // Download Excel
+        function downloadExcel() {
+
+            if (!ridesData.length) {
+                alert('No rides data available to download.');
+                return;
+            }
+
+            const excelData = ridesData.map(ride => {
+
+                const totalAmount = calculateTotalAmount(ride.passengers);
+
+                return {
+                    'Ride No.': ride.rideNo ?? '-',
+                    'Start Time': formatDate(ride.startTime),
+                    'End Time': formatDate(ride.endTime),
+                    'Total Time': calculateDuration(ride.startTime, ride.endTime),
+                    'Total Seats Booked': ride.bookedSeats ?? 0,
+                    'Total Amount Collected': totalAmount
+                };
+
+            });
+
+            try {
+
+                const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+                const workbook = XLSX.utils.book_new();
+
+                XLSX.utils.book_append_sheet(
+                    workbook,
+                    worksheet,
+                    'Rides Data'
+                );
+
+                XLSX.writeFile(workbook, 'rides_data.xlsx');
+
+                // Show Delete button after Excel download is initiated
+                document.getElementById('deleteBtn').style.display = 'inline-block';
+
+            } catch (error) {
+
+                console.error('Excel download failed:', error);
+
+                alert('Unable to download Excel file. Please try again.');
+
+            }
+        }
+
+        // Delete All Rides
+        async function deleteAllRides() {
+
+            const confirmation = confirm(
+                'Are you sure you want to delete ALL rides data? This action cannot be undone.'
+            );
+
+            if (!confirmation) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch('/train/deleteAllRides', {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Unable to delete rides');
+                }
+
+                alert('All rides data deleted successfully!');
+
+                // Refresh table and revenue after deletion
+                await fetchRideData();
+
+            } catch (error) {
+
+                console.error('Error deleting rides:', error);
+
+                alert(error.message || 'Something went wrong while deleting rides.');
+
+            }
+        }
+
+        // Load Rides Data When Page Opens
+        fetchRideData();
+
+    </script>
+
+</body>
+</html>
