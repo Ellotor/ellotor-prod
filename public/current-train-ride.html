@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Current Ride</title>
+
+<style>
+    body {
+        font-family: Arial;
+        background: #f4f4f4;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    th {
+        background: #007bff;
+        color: white;
+    }
+
+    .card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .waiting {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .started {
+        color: #28a745;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <button onclick="history.back()">⬅ Back</button>
+
+    <h1>Current Ride</h1>
+
+    <div id="ride-info"></div>
+
+    <table id="passengers"></table>
+
+</div>
+
+<script>
+
+async function loadCurrent() {
+
+    try {
+
+        const res = await fetch('/train/currentRide');
+
+        const ride = await res.json();
+
+        let statusText = '';
+
+        if (ride.status === 'Started') {
+
+            statusText =
+                `<span class="started">
+                    Ride Started
+                </span>`;
+
+        } else {
+
+            statusText =
+                `<span class="waiting">
+                    Ride No ${ride.rideNo} is waiting to be started
+                </span>`;
+        }
+
+        document.getElementById('ride-info').innerHTML = `
+            <div class="card">
+
+                <p>
+                    <strong>Ride Number:</strong>
+                    ${ride.rideNo}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    ${ride.status}
+                </p>
+
+                <p>
+                    <strong>Total Seats Booked:</strong>
+                    ${ride.bookedSeats || 0}
+                </p>
+
+                <p>
+                    <strong>Start Time:</strong>
+                    ${
+                        ride.startTime
+                        ? new Date(ride.startTime).toLocaleString()
+                        : 'Not Started Yet'
+                    }
+                </p>
+
+                <p>${statusText}</p>
+
+            </div>
+        `;
+
+        const table = document.getElementById('passengers');
+
+        table.innerHTML = `
+            <tr>
+                <th>Passenger Name</th>
+                <th>Mobile</th>
+                <th>Tickets</th>
+                <th>Amount</th>
+            </tr>
+        `;
+
+        if (ride.passengers && ride.passengers.length > 0) {
+
+            ride.passengers.forEach(p => {
+
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${p.passengerName}</td>
+                    <td>${p.mobile}</td>
+                    <td>${p.tickets}</td>
+                    <td>₹${p.amount}</td>
+                `;
+
+                table.appendChild(row);
+            });
+
+        } else {
+
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td colspan="4" style="text-align:center;">
+                    No passengers booked yet.
+                </td>
+            `;
+
+            table.appendChild(row);
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        document.getElementById('ride-info').innerHTML =
+            '<p style="color:red;">Unable to load ride details.</p>';
+    }
+}
+
+loadCurrent();
+
+/* Auto refresh every 5 seconds */
+setInterval(loadCurrent, 5000);
+
+</script>
+
+</body>
+</html>
