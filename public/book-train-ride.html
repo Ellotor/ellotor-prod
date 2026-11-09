@@ -1,0 +1,601 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Train Ride</title>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f4f4;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+        text-align: center;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+
+    .info {
+        background: #eaf4ff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        font-size: 17px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin: 15px 0 5px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+
+    button {
+        padding: 14px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .submit {
+        background: #007bff;
+        color: white;
+    }
+
+    .submit:hover {
+        background: #0056b3;
+    }
+
+    .submit:disabled {
+        background: #999;
+        cursor: not-allowed;
+    }
+
+    .back {
+        background: #6c757d;
+        color: white;
+    }
+
+    /* Ride Selection */
+
+    .ride-selection {
+        margin-bottom: 15px;
+    }
+
+    .ride-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .ride-btn {
+        color: white;
+        border: 2px solid transparent;
+    }
+
+    /* Current Ride - Blue */
+
+    .current-btn {
+        background: #007bff;
+    }
+
+    .current-btn:hover {
+        background: #0056b3;
+    }
+
+    .current-description {
+        background: #eaf4ff;
+        color: #0056b3;
+        border-left: 4px solid #007bff;
+    }
+
+    /* Next Ride - Green */
+
+    .next-btn {
+        background: #28a745;
+    }
+
+    .next-btn:hover {
+        background: #218838;
+    }
+
+    .next-description {
+        background: #e8f8ed;
+        color: #218838;
+        border-left: 4px solid #28a745;
+    }
+
+    .ride-description {
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin: 15px 0;
+        text-align: center;
+    }
+
+    .selected-current {
+        color: #007bff;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .selected-next {
+        color: #28a745;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .error {
+        color: red;
+        font-size: 14px;
+        margin-top: -10px;
+        margin-bottom: 10px;
+    }
+
+    /* Hide passenger form initially */
+
+    #passengerForm {
+        display: none;
+    }
+
+    /* Hide complete ride selection area */
+
+    .ride-selection.hidden {
+        display: none;
+    }
+
+    @media(max-width: 550px) {
+        .container {
+            margin: 15px;
+            padding: 20px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <button class="back" onclick="location.href='train-ride.html'">
+        ⬅ Back
+    </button>
+
+    <h1>Book Train Ride</h1>
+
+    <div class="info" id="ride-info">
+        Loading ride...
+    </div>
+
+    <!-- Ride Selection Area -->
+
+    <div class="ride-selection" id="rideSelection">
+
+        <label>Select Ride</label>
+
+        <div class="ride-buttons" id="rideButtons">
+
+            <button type="button"
+                    class="ride-btn current-btn"
+                    id="currentRideBtn"
+                    onclick="selectRide('current')">
+                Current Ride
+            </button>
+
+            <button type="button"
+                    class="ride-btn next-btn"
+                    id="nextRideBtn"
+                    onclick="selectRide('next')">
+                Next Ride
+            </button>
+
+        </div>
+
+    </div>
+
+    <div id="selectedRideInfo"></div>
+
+    <!-- Passenger Form: Hidden Initially -->
+
+    <div id="passengerForm">
+
+        <div class="ride-description" id="rideDescription"></div>
+
+        <label>Passenger Name</label>
+        <input
+            id="passengerName"
+            type="text"
+            placeholder="Enter Passenger Name"
+        >
+
+        <label>Mobile Number</label>
+        <input
+            id="mobile"
+            type="tel"
+            maxlength="10"
+            placeholder="Enter 10-digit Mobile"
+        >
+
+        <div class="error" id="mobile-error"></div>
+
+        <label>Number of Tickets</label>
+        <input
+            type="number"
+            id="tickets"
+            min="1"
+            value="1"
+            oninput="calculateAmount()"
+        >
+
+        <label>Amount</label>
+        <input
+            id="amount"
+            readonly
+            style="background:#f8f9fa;"
+        >
+
+        <button class="submit" id="submitBtn" onclick="bookRide()">
+            Submit Booking
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+let currentRideId = "";
+let currentRideNo = "";
+let nextRideNo = "";
+let selectedRideType = "";
+
+
+/* Calculate Ticket Amount */
+
+function calculateAmount() {
+
+    const tickets =
+        Number(document.getElementById("tickets").value) || 0;
+
+    document.getElementById("amount").value =
+        tickets > 0 ? "₹ " + (tickets * 100) : "";
+}
+
+
+/* Display Ride Information */
+
+function displayRideInfo(data) {
+
+    document.getElementById("ride-info").innerHTML = `
+        Ride No: <strong>${data.rideNo}</strong><br>
+        Status: <strong>${data.status}</strong><br>
+        Total Seats Booked: <strong>${data.bookedSeats || 0}</strong>
+    `;
+}
+
+
+/* Load Selected Ride Information */
+
+async function loadSelectedRide(type) {
+
+    const rideInfo = document.getElementById("ride-info");
+
+    rideInfo.innerHTML = "Loading ride information...";
+
+    try {
+
+        const endpoint =
+            type === "current"
+                ? "/train/currentRide"
+                : "/train/nextRide";
+
+        const res = await fetch(endpoint, {
+            cache: "no-store"
+        });
+
+        if (!res.ok) {
+            throw new Error("Unable to load ride information");
+        }
+
+        const data = await res.json();
+
+        if (type === "current") {
+
+            currentRideId = data._id;
+            currentRideNo = data.rideNo;
+            nextRideNo = Number(data.rideNo) + 1;
+
+        } else {
+
+            nextRideNo = data.rideNo;
+        }
+
+        displayRideInfo(data);
+
+    } catch (err) {
+
+        console.error(err);
+
+        rideInfo.innerHTML =
+            `<span style="color:red;">Unable to load ride information.</span>`;
+    }
+}
+
+
+/* Select Current Ride or Next Ride */
+
+async function selectRide(type) {
+
+    selectedRideType = type;
+
+    // Hide complete ride selection area including label and buttons
+    document.getElementById("rideSelection").classList.add("hidden");
+
+    // Show passenger form
+    document.getElementById("passengerForm").style.display = "block";
+
+    const selectedInfo =
+        document.getElementById("selectedRideInfo");
+
+    const rideDescription =
+        document.getElementById("rideDescription");
+
+    if (type === "current") {
+
+        // Current Ride - Blue
+
+        selectedInfo.className = "selected-current";
+
+        selectedInfo.innerHTML =
+            `Selected: Current Ride (${currentRideNo})`;
+
+        rideDescription.className =
+            "ride-description current-description";
+
+        rideDescription.innerHTML =
+            `Current Ride No. ${currentRideNo}`;
+
+    } else {
+
+        // Next Ride - Green
+
+        selectedInfo.className = "selected-next";
+
+        selectedInfo.innerHTML =
+            `Selected: Next Ride (${nextRideNo})`;
+
+        rideDescription.className =
+            "ride-description next-description";
+
+        rideDescription.innerHTML =
+            `Advance Booking of Ride No. ${nextRideNo}`;
+    }
+
+    calculateAmount();
+
+    // Update the Ride No, Status and Total Seats Booked section
+    await loadSelectedRide(type);
+
+    // Refresh selected ride number after loading
+    if (type === "current") {
+
+        selectedInfo.innerHTML =
+            `Selected: Current Ride (${currentRideNo})`;
+
+        rideDescription.innerHTML =
+            `Current Ride No. ${currentRideNo}`;
+
+    } else {
+
+        selectedInfo.innerHTML =
+            `Selected: Next Ride (${nextRideNo})`;
+
+        rideDescription.innerHTML =
+            `Advance Booking of Ride No. ${nextRideNo}`;
+    }
+}
+
+
+/* Load Current Ride Information */
+
+async function loadCurrentRide() {
+
+    await loadSelectedRide("current");
+}
+
+
+/* Validate Mobile Number */
+
+function validateMobile() {
+
+    const mobile =
+        document.getElementById("mobile").value.trim();
+
+    const errorDiv =
+        document.getElementById("mobile-error");
+
+    if (!/^[0-9]{10}$/.test(mobile)) {
+
+        errorDiv.textContent =
+            "Please enter valid 10-digit mobile number";
+
+        return false;
+    }
+
+    errorDiv.textContent = "";
+
+    return true;
+}
+
+
+/* Book Passenger */
+
+async function bookRide() {
+
+    const passengerName =
+        document.getElementById("passengerName").value.trim();
+
+    const mobile =
+        document.getElementById("mobile").value.trim();
+
+    const tickets =
+        Number(document.getElementById("tickets").value);
+
+    if (!selectedRideType) {
+
+        alert("Please select a ride first.");
+        return;
+    }
+
+    if (!passengerName || !mobile || !tickets || tickets < 1) {
+
+        alert("Please fill all fields.");
+        return;
+    }
+
+    if (!validateMobile()) return;
+
+    const selectedRideNo =
+        selectedRideType === "current"
+            ? currentRideNo
+            : nextRideNo;
+
+    const body = {
+        rideId: currentRideId,
+        passengerName,
+        mobile,
+        tickets,
+        rideType: selectedRideType,
+        rideNo: selectedRideNo
+    };
+
+    // Prevent duplicate submissions
+
+    const submitBtn = document.getElementById("submitBtn");
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Booking...";
+
+    try {
+
+        const res = await fetch("/train/bookPassenger", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+
+            alert(data.message || "Booking Failed");
+            return;
+        }
+
+        alert(
+            `${tickets} seat(s) booked successfully.\nRide No: ${selectedRideNo}`
+        );
+
+        // WhatsApp Confirmation Message
+
+    const whatsappMessage =
+    `Thank You For Booking Your Ride! \n\n` +
+    `Ride No: ${selectedRideNo}\n` +
+    `Passenger: ${passengerName}\n` +
+    `Total Seats Booked: ${tickets}\n` +
+    `Total Amount Paid: ₹${tickets * 100}\n\n` +
+    `Enjoy the Ride!!`;
+
+        window.open(
+            `https://wa.me/91${mobile}?text=${encodeURIComponent(whatsappMessage)}`,
+            "_blank"
+        );
+
+        // Clear Passenger Details
+
+        document.getElementById("passengerName").value = "";
+        document.getElementById("mobile").value = "";
+        document.getElementById("tickets").value = "1";
+        document.getElementById("amount").value = "";
+        document.getElementById("mobile-error").textContent = "";
+
+        // Hide Passenger Form
+
+        document.getElementById("passengerForm").style.display = "none";
+
+        // Clear Selected Ride Information
+
+        document.getElementById("selectedRideInfo").innerHTML = "";
+        document.getElementById("selectedRideInfo").className = "";
+        document.getElementById("rideDescription").innerHTML = "";
+        document.getElementById("rideDescription").className = "ride-description";
+
+        // Reset Selected Ride
+
+        selectedRideType = "";
+
+        // Show Select Ride Label and Both Buttons Again
+
+        document.getElementById("rideSelection").classList.remove("hidden");
+
+        // Refresh Current Ride Information
+
+        await loadCurrentRide();
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Error booking ride. Please try again.");
+
+    } finally {
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Booking";
+
+    }
+}
+
+
+/* Initial Page Load */
+
+loadCurrentRide();
+
+</script>
+
+</body>
+</html>
